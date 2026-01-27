@@ -171,6 +171,13 @@ Ver `database/init.sql` para el esquema completo y datos de ejemplo.
 - ✅ Containerización con Docker
 - ✅ Datos de ejemplo precargados
 
+## 🔒 Seguridad
+
+Este proyecto está diseñado con fines educativos (DAW 1). Para uso en producción, consulte el archivo [SECURITY.md](SECURITY.md) que documenta:
+- Medidas de seguridad implementadas
+- Recomendaciones para producción (rate limiting, autenticación, HTTPS, etc.)
+- Hallazgos de análisis de seguridad CodeQL
+
 ## 🔧 Configuración
 
 ### Variables de Entorno
