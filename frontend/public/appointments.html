@@ -1,0 +1,113 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Citas - AlertDog</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+</head>
+<body class="bg-gray-100">
+    <!-- Navigation -->
+    <nav class="bg-blue-600 text-white shadow-lg">
+        <div class="container mx-auto px-4 py-4">
+            <div class="flex items-center justify-between">
+                <div class="flex items-center space-x-2">
+                    <i class="fas fa-dog text-2xl"></i>
+                    <h1 class="text-2xl font-bold">AlertDog</h1>
+                </div>
+                <div class="space-x-4">
+                    <a href="index.html" class="hover:text-blue-200">Inicio</a>
+                    <a href="dogs.html" class="hover:text-blue-200">Perros</a>
+                    <a href="breeds.html" class="hover:text-blue-200">Razas</a>
+                    <a href="users.html" class="hover:text-blue-200">Usuarios</a>
+                    <a href="appointments.html" class="text-blue-200 font-semibold">Citas</a>
+                </div>
+            </div>
+        </div>
+    </nav>
+
+    <div class="container mx-auto px-4 py-8">
+        <div class="flex justify-between items-center mb-6">
+            <h2 class="text-3xl font-bold text-gray-800">Gestión de Citas</h2>
+            <button onclick="showAddModal()" class="bg-orange-600 text-white px-6 py-2 rounded-lg hover:bg-orange-700 transition">
+                <i class="fas fa-plus mr-2"></i>Nueva Cita
+            </button>
+        </div>
+
+        <!-- Appointments Table -->
+        <div class="bg-white rounded-lg shadow-lg overflow-hidden">
+            <table class="min-w-full">
+                <thead class="bg-gray-200">
+                    <tr>
+                        <th class="py-3 px-6 text-left">Fecha</th>
+                        <th class="py-3 px-6 text-left">Hora</th>
+                        <th class="py-3 px-6 text-left">Usuario</th>
+                        <th class="py-3 px-6 text-left">Perro</th>
+                        <th class="py-3 px-6 text-left">Motivo</th>
+                        <th class="py-3 px-6 text-left">Estado</th>
+                        <th class="py-3 px-6 text-center">Acciones</th>
+                    </tr>
+                </thead>
+                <tbody id="appointmentsTable">
+                    <!-- Appointments will be loaded here -->
+                </tbody>
+            </table>
+        </div>
+    </div>
+
+    <!-- Add/Edit Modal -->
+    <div id="appointmentModal" class="hidden fixed inset-0 bg-gray-600 bg-opacity-50 overflow-y-auto h-full w-full">
+        <div class="relative top-20 mx-auto p-5 border w-96 shadow-lg rounded-md bg-white">
+            <div class="flex justify-between items-center mb-4">
+                <h3 class="text-lg font-bold" id="modalTitle">Nueva Cita</h3>
+                <button onclick="closeModal()" class="text-gray-500 hover:text-gray-700">
+                    <i class="fas fa-times"></i>
+                </button>
+            </div>
+            <form id="appointmentForm">
+                <input type="hidden" id="appointmentId">
+                <div class="mb-4">
+                    <label class="block text-gray-700 text-sm font-bold mb-2">Usuario</label>
+                    <select id="usuario_id" required class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline">
+                        <option value="">Seleccionar usuario...</option>
+                    </select>
+                </div>
+                <div class="mb-4">
+                    <label class="block text-gray-700 text-sm font-bold mb-2">Perro</label>
+                    <select id="perro_id" required class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline">
+                        <option value="">Seleccionar perro...</option>
+                    </select>
+                </div>
+                <div class="mb-4">
+                    <label class="block text-gray-700 text-sm font-bold mb-2">Fecha</label>
+                    <input type="date" id="fecha" required class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline">
+                </div>
+                <div class="mb-4">
+                    <label class="block text-gray-700 text-sm font-bold mb-2">Hora</label>
+                    <input type="time" id="hora" required class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline">
+                </div>
+                <div class="mb-4">
+                    <label class="block text-gray-700 text-sm font-bold mb-2">Motivo</label>
+                    <textarea id="motivo" rows="3" class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"></textarea>
+                </div>
+                <div class="mb-4">
+                    <label class="block text-gray-700 text-sm font-bold mb-2">Estado</label>
+                    <select id="estado" required class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline">
+                        <option value="pendiente">Pendiente</option>
+                        <option value="confirmada">Confirmada</option>
+                        <option value="completada">Completada</option>
+                        <option value="cancelada">Cancelada</option>
+                    </select>
+                </div>
+                <div class="flex justify-end space-x-2">
+                    <button type="button" onclick="closeModal()" class="bg-gray-500 text-white px-4 py-2 rounded hover:bg-gray-600">Cancelar</button>
+                    <button type="submit" class="bg-orange-600 text-white px-4 py-2 rounded hover:bg-orange-700">Guardar</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <script src="js/appointments.js"></script>
+</body>
+</html>

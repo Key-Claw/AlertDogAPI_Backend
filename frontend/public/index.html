@@ -1,0 +1,111 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AlertDog - Gestión de Perros de Alerta</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+</head>
+<body class="bg-gray-100">
+    <!-- Navigation -->
+    <nav class="bg-blue-600 text-white shadow-lg">
+        <div class="container mx-auto px-4 py-4">
+            <div class="flex items-center justify-between">
+                <div class="flex items-center space-x-2">
+                    <i class="fas fa-dog text-2xl"></i>
+                    <h1 class="text-2xl font-bold">AlertDog</h1>
+                </div>
+                <div class="space-x-4">
+                    <a href="index.html" class="hover:text-blue-200">Inicio</a>
+                    <a href="dogs.html" class="hover:text-blue-200">Perros</a>
+                    <a href="breeds.html" class="hover:text-blue-200">Razas</a>
+                    <a href="users.html" class="hover:text-blue-200">Usuarios</a>
+                    <a href="appointments.html" class="hover:text-blue-200">Citas</a>
+                </div>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Hero Section -->
+    <div class="bg-gradient-to-r from-blue-500 to-blue-700 text-white py-20">
+        <div class="container mx-auto px-4 text-center">
+            <h2 class="text-5xl font-bold mb-4">Sistema de Gestión de Perros de Alerta</h2>
+            <p class="text-xl mb-8">Administra perros de alerta, razas, usuarios y citas de forma eficiente</p>
+            <div class="flex justify-center space-x-4">
+                <a href="dogs.html" class="bg-white text-blue-600 px-6 py-3 rounded-lg font-semibold hover:bg-blue-50 transition">
+                    <i class="fas fa-dog mr-2"></i>Ver Perros
+                </a>
+                <a href="appointments.html" class="bg-blue-800 text-white px-6 py-3 rounded-lg font-semibold hover:bg-blue-900 transition">
+                    <i class="fas fa-calendar mr-2"></i>Gestionar Citas
+                </a>
+            </div>
+        </div>
+    </div>
+
+    <!-- Stats Section -->
+    <div class="container mx-auto px-4 py-12">
+        <div class="grid grid-cols-1 md:grid-cols-4 gap-6">
+            <div class="bg-white rounded-lg shadow-lg p-6 text-center">
+                <i class="fas fa-dog text-4xl text-blue-600 mb-4"></i>
+                <h3 class="text-3xl font-bold text-gray-800" id="totalPerros">0</h3>
+                <p class="text-gray-600">Perros Registrados</p>
+            </div>
+            <div class="bg-white rounded-lg shadow-lg p-6 text-center">
+                <i class="fas fa-paw text-4xl text-green-600 mb-4"></i>
+                <h3 class="text-3xl font-bold text-gray-800" id="totalRazas">0</h3>
+                <p class="text-gray-600">Razas</p>
+            </div>
+            <div class="bg-white rounded-lg shadow-lg p-6 text-center">
+                <i class="fas fa-users text-4xl text-purple-600 mb-4"></i>
+                <h3 class="text-3xl font-bold text-gray-800" id="totalUsuarios">0</h3>
+                <p class="text-gray-600">Usuarios</p>
+            </div>
+            <div class="bg-white rounded-lg shadow-lg p-6 text-center">
+                <i class="fas fa-calendar-check text-4xl text-orange-600 mb-4"></i>
+                <h3 class="text-3xl font-bold text-gray-800" id="totalCitas">0</h3>
+                <p class="text-gray-600">Citas Programadas</p>
+            </div>
+        </div>
+    </div>
+
+    <!-- Features Section -->
+    <div class="bg-white py-12">
+        <div class="container mx-auto px-4">
+            <h2 class="text-3xl font-bold text-center mb-12 text-gray-800">Características del Sistema</h2>
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-8">
+                <div class="text-center">
+                    <div class="bg-blue-100 rounded-full w-20 h-20 flex items-center justify-center mx-auto mb-4">
+                        <i class="fas fa-database text-3xl text-blue-600"></i>
+                    </div>
+                    <h3 class="text-xl font-semibold mb-2">Gestión Completa</h3>
+                    <p class="text-gray-600">Administra perros de alerta, razas, usuarios y citas en un solo lugar</p>
+                </div>
+                <div class="text-center">
+                    <div class="bg-green-100 rounded-full w-20 h-20 flex items-center justify-center mx-auto mb-4">
+                        <i class="fas fa-image text-3xl text-green-600"></i>
+                    </div>
+                    <h3 class="text-xl font-semibold mb-2">Imágenes de Perros</h3>
+                    <p class="text-gray-600">Sube y gestiona fotos de cada perro en el sistema</p>
+                </div>
+                <div class="text-center">
+                    <div class="bg-purple-100 rounded-full w-20 h-20 flex items-center justify-center mx-auto mb-4">
+                        <i class="fas fa-calendar-alt text-3xl text-purple-600"></i>
+                    </div>
+                    <h3 class="text-xl font-semibold mb-2">Sistema de Citas</h3>
+                    <p class="text-gray-600">Programa y gestiona citas veterinarias y revisiones</p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Footer -->
+    <footer class="bg-gray-800 text-white py-6 mt-12">
+        <div class="container mx-auto px-4 text-center">
+            <p>&copy; 2026 AlertDog API - Proyecto DAW 1</p>
+        </div>
+    </footer>
+
+    <script src="js/main.js"></script>
+</body>
+</html>
