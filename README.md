@@ -1,287 +1,169 @@
 # 🐕 AlertDogAPI
 
-**Proyecto DAW 1:** API REST y frontend para la gestión de **perros de alerta**, razas, usuarios y citas. Permite crear, consultar y gestionar datos de perros, citas y usuarios mediante un frontend con Tailwind CSS.
+Perfecto 👌 este README explica de forma clara y profesional la configuración del backend de AlertDogAPI, listo para usar y entender fácilmente.
 
 ---
 
-## ⚡ Tecnologías
+## 📦 Backend – `package.json` explicado
 
-- **Backend:** Node.js + Express  
-- **Base de datos:** MariaDB  
-- **Frontend:** HTML + Tailwind CSS + JavaScript  
-- **Contenedores:** Docker (backend, frontend y MariaDB)  
-- **Imágenes:** Carpeta `frontend/images/` para fotos de los perros  
+El archivo `package.json` define la configuración del proyecto backend, incluyendo:
 
----
-
-## 🐾 Características principales
-
-- Gestión de perros, razas y usuarios  
-- Creación, edición y consulta de citas  
-- Visualización de lista de perros con sus imágenes  
-- Formulario para solicitar citas  
-- Integración frontend ↔ API REST  
-- Contenedores Docker para despliegue fácil  
+* Nombre del proyecto
+* Scripts de ejecución
+* Dependencias necesarias para el funcionamiento de la API
 
 ---
 
-## 🚀 Ejecución rápida con Docker
+### 📌 Información general
+
+```json
+"name": "AlertDogAPI_Backend"
+```
+
+Este es el **nombre del proyecto backend**.
+
+---
+
+### ▶ Scripts
+
+```json
+"scripts": {
+  "start": "node src/app.js --config config.loca.yaml"
+}
+```
+
+#### 🔹 `start`
+
+Inicia el servidor backend utilizando Node.js:
+
+* `node src/app.js` → Ejecuta el archivo principal del servidor
+* `--config config.loca.yaml` → Pasa un archivo de configuración externo en formato YAML
+
+Se ejecuta con:
 
 ```bash
-docker-compose up --build
-````
-
-* **Frontend:** [http://localhost:8080](http://localhost:8080)
-* **API:** [http://localhost:3000](http://localhost:3000)
-
----
-
-## 📁 Estructura de carpetas
-
-```
-alertdog-api/
-├── backend/        # API Node.js + Express
-│   ├── Dockerfile
-│   ├── package.json
-│   ├── app.js
-│   └── routes/     # rutas para dogs, appointments, users
-├── frontend/       # HTML, Tailwind CSS, JS
-│   ├── index.html
-│   ├── citas.html
-│   ├── main.js
-│   └── img/     # fotos de perros
-├── db/             # init.sql para MariaDB
-├── docker-compose.yml
-└── README.md
+npm start
 ```
 
 ---
 
-## 🐕 Base de datos
+## 📚 Dependencias
 
-**Tablas principales:**
+Las siguientes librerías son necesarias para que la API funcione correctamente:
 
-* `breeds` → razas de los perros
-* `dogs` → información de cada perro (nombre, edad, tipo de alerta, estado, imagen)
-* `users` → clientes, entrenadores y administradores
-* `appointments` → gestión de citas entre usuarios y perros
+---
 
-Ejemplo de inserción rápida:
+### 🚀 express (5.1.0)
 
-```sql
-INSERT INTO breeds (name, description) VALUES ('Labrador Retriever', 'Ideal alert dog breed');
-INSERT INTO dogs (name, age, alert_type, status, entry_date, breed_id, image) VALUES ('Max', 2, 'Diabetes', 'In training', '2024-10-12', 1, 'images/max.jpg');
-INSERT INTO users (name, email, role) VALUES ('Ana', 'ana@email.com', 'client');
-INSERT INTO appointments (date, time, type, status, user_id, dog_id) VALUES ('2025-03-20', '10:30', 'evaluation', 'pending', 1, 1);
+Framework para crear el servidor web y construir la API REST.
+
+Permite:
+
+* Definir rutas (`GET`, `POST`, `PUT`, `DELETE`)
+* Manejar peticiones HTTP
+* Conectar el backend con el frontend
+
+---
+
+### 🗄 knex (^3.1.0)
+
+Query Builder para bases de datos.
+
+Permite:
+
+* Realizar consultas SQL desde JavaScript
+* Insertar, actualizar y eliminar datos
+* Gestionar la conexión con MariaDB de forma estructurada
+
+---
+
+### 🐬 mysql2 (^3.9.0)
+
+Driver que permite conectar Node.js con MariaDB/MySQL.
+
+* Es utilizado por Knex para comunicarse con la base de datos
+
+---
+
+### 🌍 cors (^2.8.5)
+
+Middleware que permite la comunicación entre frontend y backend cuando están en diferentes puertos o dominios.
+
+* Evita errores de tipo **CORS policy** en el navegador
+
+---
+
+### 🔐 dotenv (^16.4.0)
+
+Permite cargar variables de entorno desde un archivo `.env`.
+
+Se utiliza para almacenar datos sensibles como:
+
+* Usuario de base de datos
+* Contraseña
+* Host
+* Puerto
+* Configuración del servidor
+
+---
+
+### 🔑 bcrypt (^5.1.0)
+
+Librería utilizada para **encriptar contraseñas** antes de guardarlas en la base de datos.
+
+* Garantiza que las contraseñas **no se almacenen en texto plano**
+
+---
+
+### 📄 js-yaml (4.0.0)
+
+Permite leer archivos de configuración en formato `.yaml`.
+
+* Se utiliza para cargar configuraciones externas del servidor
+
+---
+
+### 🧾 yargs (17.0.0)
+
+Permite leer **argumentos enviados por consola**.
+
+* Se usa para pasar el archivo de configuración al iniciar el servidor
+
+---
+
+## 🛠 DevDependencies
+
+Dependencias utilizadas únicamente en entorno de desarrollo.
+
+---
+
+### 🔄 nodemon (^3.0.0)
+
+Herramienta que reinicia automáticamente el servidor cuando se detectan cambios en el código.
+
+Se recomienda añadir un script adicional para desarrollo:
+
+```json
+"dev": "nodemon src/app.js"
+```
+
+Y ejecutarlo con:
+
+```bash
+npm run dev
 ```
 
 ---
 
-## 🌐 Frontend
+## 🎯 Resumen técnico
 
-* Lista de perros con imagen, raza y tipo de alerta
-* Formulario para pedir citas, conectado con la API
-* Estilos rápidos con Tailwind CSS
+El backend de **AlertDogAPI** está construido con:
 
-Ejemplo:
-
-```html
-<img src="images/max.jpg" alt="Dog Max" class="w-32 h-32 rounded">
-<button class="bg-blue-600 text-white px-4 py-2 rounded">Request Appointment</button>
-```
+* **Node.js** como entorno de ejecución
+* **Express** para la creación de la API REST
+* **Knex + MariaDB** para la gestión de base de datos
+* **bcrypt** para seguridad de contraseñas
+* **dotenv y YAML** para gestión de configuración
+* **Docker** para la contenerización del sistema
 
 ---
-
-## 🐳 Docker
-
-Ejemplo `docker-compose.yml`:
-
-```yaml
-version: '3.8'
-services:
-  mariadb:
-    image: mariadb:11
-    environment:
-      MYSQL_ROOT_PASSWORD: root
-      MYSQL_DATABASE: alertdog
-    volumes:
-      - ./db/init.sql:/docker-entrypoint-initdb.d/init.sql
-    ports:
-      - "3306:3306"
-
-  backend:
-    build: ./backend
-    ports:
-      - "3000:3000"
-    depends_on:
-      - mariadb
-
-  frontend:
-    image: nginx:alpine
-    volumes:
-      - ./frontend:/usr/share/nginx/html
-    ports:
-      - "8080:80"
-```
-
----
-
-## 📚 Contacto
-
-Proyecto realizado como entrega del segundo trimestre de **DAW 1**. Ideal para practicar **API REST, frontend moderno con Tailwind, Docker y bases de datos relacionales**.
-
-````
-
----
-
-### 2️⃣ init.sql para MariaDB
-
-```sql
--- Base de datos AlertDogAPI
-CREATE DATABASE IF NOT EXISTS alertdog;
-USE alertdog;
-
--- Tabla de razas
-CREATE TABLE breeds (
-  id_breed INT AUTO_INCREMENT PRIMARY KEY,
-  name VARCHAR(50) NOT NULL,
-  description TEXT
-) ENGINE=InnoDB;
-
--- Tabla de perros
-CREATE TABLE dogs (
-  id_dog INT AUTO_INCREMENT PRIMARY KEY,
-  name VARCHAR(50) NOT NULL,
-  age INT,
-  alert_type VARCHAR(50),
-  status VARCHAR(30),
-  entry_date DATE,
-  breed_id INT,
-  image VARCHAR(255),
-  CONSTRAINT fk_dog_breed FOREIGN KEY (breed_id) REFERENCES breeds(id_breed) ON DELETE SET NULL ON UPDATE CASCADE
-) ENGINE=InnoDB;
-
--- Tabla de usuarios
-CREATE TABLE users (
-  id_user INT AUTO_INCREMENT PRIMARY KEY,
-  name VARCHAR(50) NOT NULL,
-  email VARCHAR(100) UNIQUE NOT NULL,
-  role ENUM('client','trainer','admin') NOT NULL
-) ENGINE=InnoDB;
-
--- Tabla de citas
-CREATE TABLE appointments (
-  id_appointment INT AUTO_INCREMENT PRIMARY KEY,
-  date DATE NOT NULL,
-  time TIME NOT NULL,
-  type ENUM('evaluation','training','followup','delivery') NOT NULL,
-  status ENUM('pending','confirmed','canceled') NOT NULL,
-  user_id INT,
-  dog_id INT,
-  CONSTRAINT fk_appointment_user FOREIGN KEY (user_id) REFERENCES users(id_user) ON DELETE CASCADE,
-  CONSTRAINT fk_appointment_dog FOREIGN KEY (dog_id) REFERENCES dogs(id_dog) ON DELETE CASCADE
-) ENGINE=InnoDB;
-
--- Datos de ejemplo
-INSERT INTO breeds (name, description) VALUES ('Labrador Retriever', 'Ideal alert dog breed');
-INSERT INTO dogs (name, age, alert_type, status, entry_date, breed_id, image) VALUES ('Max', 2, 'Diabetes', 'In training', '2024-10-12', 1, 'images/max.jpg');
-INSERT INTO users (name, email, role) VALUES ('Ana', 'ana@email.com', 'client');
-INSERT INTO appointments (date, time, type, status, user_id, dog_id) VALUES ('2025-03-20', '10:30', 'evaluation', 'pending', 1, 1);
-````
-
----
-
-### 3️⃣ app.js base + rutas
-
-**backend/app.js**
-
-```javascript
-const express = require('express');
-const cors = require('cors');
-const mysql = require('mysql2');
-require('dotenv').config();
-
-const app = express();
-app.use(cors());
-app.use(express.json());
-
-// Conexión a MariaDB
-const db = mysql.createPool({
-  host: process.env.DB_HOST || 'mariadb',
-  user: process.env.DB_USER || 'root',
-  password: process.env.DB_PASSWORD || 'root',
-  database: process.env.DB_NAME || 'alertdog'
-});
-
-// Rutas
-const dogsRoutes = require('./routes/dogs')(db);
-const appointmentsRoutes = require('./routes/appointments')(db);
-
-app.use('/api/dogs', dogsRoutes);
-app.use('/api/appointments', appointmentsRoutes);
-
-const PORT = process.env.PORT || 3000;
-app.listen(PORT, () => {
-  console.log(`API AlertDogAPI corriendo en puerto ${PORT}`);
-});
-```
-
-**backend/routes/dogs.js**
-
-```javascript
-const express = require('express');
-
-module.exports = (db) => {
-  const router = express.Router();
-
-  // GET /api/dogs
-  router.get('/', (req, res) => {
-    db.query('SELECT * FROM dogs', (err, results) => {
-      if (err) return res.status(500).json(err);
-      res.json(results);
-    });
-  });
-
-  // POST /api/dogs
-  router.post('/', (req, res) => {
-    const { name, age, alert_type, status, entry_date, breed_id, image } = req.body;
-    const sql = 'INSERT INTO dogs (name, age, alert_type, status, entry_date, breed_id, image) VALUES (?, ?, ?, ?, ?, ?, ?)';
-    db.query(sql, [name, age, alert_type, status, entry_date, breed_id, image], (err, result) => {
-      if (err) return res.status(500).json(err);
-      res.json({ message: 'Dog added', id: result.insertId });
-    });
-  });
-
-  return router;
-};
-```
-
-**backend/routes/appointments.js**
-
-```javascript
-const express = require('express');
-
-module.exports = (db) => {
-  const router = express.Router();
-
-  // GET /api/appointments
-  router.get('/', (req, res) => {
-    db.query('SELECT * FROM appointments', (err, results) => {
-      if (err) return res.status(500).json(err);
-      res.json(results);
-    });
-  });
-
-  // POST /api/appointments
-  router.post('/', (req, res) => {
-    const { date, time, type, status, user_id, dog_id } = req.body;
-    const sql = 'INSERT INTO appointments (date, time, type, status, user_id, dog_id) VALUES (?, ?, ?, ?, ?, ?)';
-    db.query(sql, [date, time, type, status, user_id, dog_id], (err, result) => {
-      if (err) return res.status(500).json(err);
-      res.json({ message: 'Appointment added', id: result.insertId });
-    });
-  });
-
-  return router;
-};
-```
