@@ -26,5 +26,5 @@ CREATE TABLE cita (
     hora TIME NOT NULL,
     id_perro INT UNSIGNED,
     FOREIGN KEY (id_perro) REFERENCES perro(id) ON DELETE CASCADE,
-    UNIQUE (fecha, hora, id_perro) -- evita dos citas al mismo tiempo para el mismo perro
+     UNIQUE (fecha, hora, id_perro) -- evita dos citas al mismo tiempo para el mismo perro
 );
