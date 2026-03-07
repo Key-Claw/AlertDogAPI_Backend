@@ -1,32 +1,33 @@
+// 5.1 Archivo principal de la aplicación
+
+// Importar Express y crear una aplicación
 const express = require('express');
-const cors = require('cors');
-require('dotenv').config(); // Cargar variables del .env
+const router = express.Router();
 
-// Importar Rutas
-const usuarioRoute = require('./routes/usuarioRoute');
-const perroRoute = require('./routes/perroRoute');
-const citaRoute = require('./routes/citaRoute');
+// Importar rutas
+const { getUsuarios, getUsuario, postUsuario, putUsuario, deleteUsuario } = require('./controllers/usuarioController');
+const { getPerros, getPerro, postPerro, putPerro, deletePerro } = require('./controllers/perroController');
+const { getCitas, getCita, postCita, putCita, deleteCita } = require('./controllers/citaController');       
 
-const app = express();
+// Rutas para el manejo de usuarios
+router.get('/usuarios', getUsuarios);
+router.get('/usuarios/:id', getUsuario);
+router.post('/usuarios', postUsuario);
+router.put('/usuarios/:id', putUsuario);
+router.delete('/usuarios/:id', deleteUsuario);
 
-// Middleware
-app.user(cors());
-app.use(express.json()); // Para recibir JSON en el body
+// Rutas para el manejo de perros
+router.get('/perros', getPerros);
+router.get('/perros/:id', getPerro);
+router.post('/perros', postPerro);
+router.put('/perros/:id', putPerro);
+router.delete('/perros/:id', deletePerro);
 
-// Rutas
-app.use('/api/usuarios', usuarioRoute);
-app.use('/api/perros', perroRoute);
-app.use('/api/citas', citaRoute);
+// Rutas para el manejo de citas
+router.get('/citas', getCitas);
+router.get('/citas/:id', getCita);
+router.post('/citas', postCita);
+router.put('/citas/:id', putCita);
+router.delete('/citas/:id', deleteCita);
 
-// Ruta principal de prueba
-app.get('/', (req, res) => {
-    res.send('¡AlertDog Backend funcionando!');
-});
-
-// Puerto de escucha
-const PORT = process.env.PORT || 8080;
-app.listen(PORT, () => {
-    console.log(`Iniciando el backend en el puerto ${PORT}`);
-});
-
-// Orden de trabajo: configuration → app.js → route → controller → service → pruebas incrementales
+module.exports = router;
