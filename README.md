@@ -2,6 +2,16 @@
 
 Backend REST para la gestion de usuarios, perros y citas.
 
+## Estado del backend
+- CRUD completo para `usuarios`, `perros` y `citas`.
+- Reglas de negocio de citas implementadas:
+  - No permite citas duplicadas para el mismo perro en la misma fecha/hora.
+  - Valida campos obligatorios en creacion de cita (`fecha`, `hora`, `id_perro`).
+- Respuestas HTTP de negocio:
+  - `400` para cita invalida (`CITA_INVALIDA`).
+  - `404` para recursos inexistentes.
+  - `409` para cita duplicada (`CITA_DUPLICADA`).
+
 ## Tecnologias
 - Node.js
 - Express
@@ -9,6 +19,15 @@ Backend REST para la gestion de usuarios, perros y citas.
 - MariaDB / MySQL
 - js-yaml
 - yargs
+
+## Requisitos previos
+- Node.js 18+ (recomendado: 20+).
+- NPM.
+- MariaDB/MySQL corriendo en `localhost:3306`.
+- Base de datos `AlertDog` creada e inicializada con `db/init.sql`.
+
+Opcional:
+- Docker Desktop (para levantar DB + API con `docker compose`).
 
 ## Estructura del proyecto
 ```text
@@ -87,11 +106,6 @@ Nota importante: `password` debe ir como string (entre comillas) para evitar err
 - `PUT /citas/:id`
 - `DELETE /citas/:id`
 
-## Reglas de negocio implementadas
-- No se permiten citas duplicadas para el mismo perro en la misma fecha y hora.
-- Validacion de campos obligatorios en creacion de citas (`fecha`, `hora`, `id_perro`).
-- Integridad referencial con claves foraneas y `ON DELETE CASCADE`.
-
 ## Codigos HTTP relevantes
 - `200`: consulta o actualizacion correcta
 - `201`: creacion correcta
@@ -106,6 +120,8 @@ El archivo `db/init.sql` contiene:
 - Relaciones entre tablas
 - Datos iniciales de prueba
 
+Incluye integridad referencial con `ON DELETE CASCADE`.
+
 ## Testing local
 Se incluyo una carpeta dedicada para pruebas: `tests/`.
 
@@ -116,6 +132,7 @@ Cobertura de estas pruebas:
 - Salud de API (`GET /`)
 - Listados principales (`/usuarios`, `/perros`, `/citas`)
 - Caso `404` de usuario inexistente
+- Caso `404` en actualizacion/eliminacion de recursos inexistentes
 - Caso `409` por cita duplicada
 - Caso `400` por cita invalida
 
@@ -123,6 +140,11 @@ Ejecucion:
 ```bash
 npm run test:api
 ```
+
+Importante:
+- Estas pruebas requieren que la API este corriendo en `http://localhost:3000`.
+- Tambien requieren que MariaDB/MySQL este disponible en `localhost:3306`.
+- Si la base de datos no esta activa, los endpoints de datos responderan `500` por `ECONNREFUSED`.
 
 ## CI con GitHub Actions
 Se implemento un pipeline en:
@@ -153,6 +175,11 @@ Servicios incluidos en `docker-compose.yml`:
 Como ejecutar con Docker:
 ```bash
 docker compose up --build
+```
+
+Si necesitas levantar en background:
+```bash
+docker compose up -d --build
 ```
 
 Para detener y eliminar contenedores:
@@ -187,3 +214,11 @@ npm run start
 ```bash
 npm run test:api
 ```
+
+## Troubleshooting rapido
+- Error `ECONNREFUSED 127.0.0.1:3306`:
+  - Verifica que MariaDB/MySQL este iniciado.
+  - Verifica host/puerto/credenciales en `config.local.yaml`.
+- `docker: command not found`:
+  - Docker no esta instalado o no esta en PATH.
+  - Levanta MariaDB local manualmente y usa `npm run start`.

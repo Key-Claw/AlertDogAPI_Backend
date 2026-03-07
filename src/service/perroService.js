@@ -1,4 +1,4 @@
-// 2.2 Crear el servicio para manejar la lógica de negocio relacionada con los perros
+// Servicio para manejar la lógica de negocio relacionada con perros
 
 const db = require('../configuration/database').db;
 
@@ -10,7 +10,7 @@ const getDaysFromNow = (date) => {
     return Math.floor(diffMs / (1000 * 60 * 60 * 24));
 };
 
-// Función para obtener todos los perros (opcional, no implementada en el controlador)
+// Obtener todos los perros
 const findAllPerros = async () => {
     try {
         const perros = await db('perro').select('*');
@@ -68,7 +68,8 @@ const getPerroPorRaza = async (raza) => {
 // Función para modificar un perro
 const modifyPerro = async (id, perro) => {
     try {
-        await db('perro').where({ id }).update(perro);
+        const updatedRows = await db('perro').where({ id }).update(perro);
+        return updatedRows;
     } catch (error) {
         console.error('Error al actualizar perro:', error);
         throw error;
@@ -78,14 +79,15 @@ const modifyPerro = async (id, perro) => {
 // Función para eliminar un perro
 const removePerro = async (id) => {
     try {
-        await db('perro').where({ id }).del();
+        const deletedRows = await db('perro').where({ id }).del();
+        return deletedRows;
     } catch (error) {
         console.error('Error al eliminar perro:', error);
         throw error;
     }
 }
 
-// Función para verificar si un perro tiene una cita próxima (opcional, no implementada en el controlador)
+// Función utilitaria para verificar si un perro tiene una cita próxima
 const tieneCitaProxima = async (id_perro) => {
     try {
         const citas = await db('cita').where({ id_perro });

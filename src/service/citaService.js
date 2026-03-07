@@ -1,8 +1,8 @@
-// 2.3 Crear el servicio para manejar la lógica de negocio relacionada con las citas
+// Servicio para manejar la lógica de negocio relacionada con citas
 
 const db = require('../configuration/database').db;
 
-// Función para obtener todas las citas (opcional, no implementada en el controlador)
+// Obtener todas las citas
 async function findAllCitas() {
     try {
         const citas = await db('cita').select('*');
@@ -74,7 +74,7 @@ const modifyCita = async (id, citaData) => {
     try {
         const citaActual = await db('cita').where({ id }).first();
         if (!citaActual) {
-            return;
+            return 0;
         }
 
         const fecha = citaData.fecha || citaActual.fecha;
@@ -92,7 +92,8 @@ const modifyCita = async (id, citaData) => {
             throw businessError;
         }
 
-        await db('cita').where({ id }).update(citaData);
+        const updatedRows = await db('cita').where({ id }).update(citaData);
+        return updatedRows;
     } catch (error) {
         if (error && error.code === 'ER_DUP_ENTRY') {
             const businessError = new Error('Ese perro ya tiene una cita en esa fecha y hora');
@@ -104,10 +105,11 @@ const modifyCita = async (id, citaData) => {
     }
 };
 
-// Función para eliminar una cita (opcional, no implementada en el controlador)
+// Eliminar una cita por ID
 const removeCita = async (id) => {
     try {
-        await db('cita').where({ id }).del();
+        const deletedRows = await db('cita').where({ id }).del();
+        return deletedRows;
     } catch (error) {
         console.error('Error al eliminar cita:', error);
         throw error;

@@ -1,4 +1,4 @@
-// 2.1 Crear el servicio para manejar la lógica de negocio relacionada con los usuarios
+// Servicio para manejar la lógica de negocio relacionada con usuarios
 
 const db = require('../configuration/database').db;
 
@@ -28,7 +28,7 @@ const normalizeRol = (rol) => {
     return rol;
 };
 
-// Función para obtener todos los usuarios (opcional, no implementada en el controlador)
+// Obtener todos los usuarios
 const findAllUsuarios = async () => {
     try {
         const usuarios = await db('usuario').select('*');
@@ -95,7 +95,7 @@ const getUsuarioPorId = async (id) => {
     }
 };
 
-// Función para modificar un usuario (opcional, no implementada en el controlador)
+// Modificar un usuario por ID
 const modifyUsuario = async (id, usuario) => {
     try {
         const usuarioToUpdate = {
@@ -103,27 +103,30 @@ const modifyUsuario = async (id, usuario) => {
             rol: normalizeRol(usuario.rol)
         };
 
-        await db('usuario').where({ id }).update(usuarioToUpdate);
+        const updatedRows = await db('usuario').where({ id }).update(usuarioToUpdate);
+        return updatedRows;
     } catch (error) {
         console.error('Error al actualizar usuario:', error);
         throw error;
     }
 };
 
-// Función para modificar la contraseña de un usuario (opcional, no implementada en el controlador)
+// Modificar la contraseña de un usuario
 const modifyPassword = async (id, newPassword) => {
     try {
-        await db('usuario').where({ id }).update({ password: newPassword });
+        const updatedRows = await db('usuario').where({ id }).update({ password: newPassword });
+        return updatedRows;
     } catch (error) {
         console.error('Error al cambiar contraseña:', error);
         throw error;
     }
 }
 
-// Función para eliminar un usuario (opcional, no implementada en el controlador)
+// Eliminar un usuario por ID
 const removeUsuario = async (id) => {
     try {
-        await db('usuario').where({ id }).del();
+        const deletedRows = await db('usuario').where({ id }).del();
+        return deletedRows;
     } catch (error) {
         console.error('Error al eliminar usuario:', error);
         throw error;

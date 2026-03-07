@@ -1,20 +1,15 @@
-// 3.2 Crear el controlador para manejar las solicitudes relacionadas con los perros
+// Controlador para manejar las solicitudes relacionadas con perros
 
 // Importar las funciones del servicio de perro
-const { findAllPerros,
+const {
+    findAllPerros,
     findPerro,
     addPerro,
-    getPerrosPorUsuario,
-    getPerroPorRaza,
     modifyPerro,
-    removePerro,
-    tieneCitaProxima } = require('../service/perroService');
+    removePerro
+} = require('../service/perroService');
 
-
-// Importar funciones de los servicios de perro y cita para obtener información relacionada
-const { findCita, getCitasPorUsuario } = require('../service/citaService');
-
-// Controlador para obtener todos los perros (opcional, no implementada en el router)
+// Obtener todos los perros
 const getPerros = async (req, res) => {
     try {
         const perros = await findAllPerros();
@@ -24,7 +19,7 @@ const getPerros = async (req, res) => {
     }
 };
 
-// Controlador para obtener un perro por su ID
+// Obtener un perro por su ID
 const getPerro = async (req, res) => {
     const { id } = req.params;
     try {
@@ -39,7 +34,7 @@ const getPerro = async (req, res) => {
     }
 };
 
-// Controlador para crear un nuevo perro
+// Crear un nuevo perro
 const postPerro = async (req, res) => {
     const perroData = req.body;
     try {
@@ -51,23 +46,31 @@ const postPerro = async (req, res) => {
 };
 
 
-// Controlador para modificar un perro
+// Modificar un perro por ID
 const putPerro = async (req, res) => {
     const { id } = req.params;
     const perroData = req.body;
     try {
-        await modifyPerro(id, perroData);
+        const updatedRows = await modifyPerro(id, perroData);
+        if (updatedRows === 0) {
+            res.status(404).json({ error: 'Perro no encontrado' });
+            return;
+        }
         res.status(200).json({ message: 'Perro modificado correctamente' });
     } catch (error) {
         res.status(500).json({ error: 'Error al modificar perro' });
     }
 };
 
-// Controlador para eliminar un perro
+// Eliminar un perro por ID
 const deletePerro = async (req, res) => {
     const { id } = req.params;
     try {
-        await removePerro(id);
+        const deletedRows = await removePerro(id);
+        if (deletedRows === 0) {
+            res.status(404).json({ error: 'Perro no encontrado' });
+            return;
+        }
         res.status(200).json({ message: 'Perro eliminado correctamente' });
     } catch (error) {
         res.status(500).json({ error: 'Error al eliminar perro' });
