@@ -33,7 +33,7 @@ const findUsuario = async (email, password) => {
     }
 };
 
-// Función para agregar un nuevo usuario
+// Función para crear un nuevo usuario
 const addUsuario = async (usuario) => {
     try {
         const [id] = await db('usuarios').insert(usuario);

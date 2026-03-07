@@ -1,39 +1,82 @@
 // 3.1 Crear el controlador para manejar las solicitudes relacionadas con los usuarios
 
-const usuarioService = require('../service/usuarioService');
+// Importar las funciones del servicio de usuario
+const { findAllUsuarios,
+    findUsuario,
+    addUsuario,
+    getUsuarioPorEmail,
+    getUsuarioPorId,
+    modifyUsuario,
+    modifyPassword,
+    removeUsuario,
+    userExisteById } = require('../service/usuarioService');
 
-// Controlador para crear un nuevo usuario
-async function getCrearUsuario(req, res) {
+// Importar funciones de los servicios de perro y cita para obtener información relacionada
+const { findPerro, getPerrosPorUsuario } = require('../service/perroService');
+const { findCita, getCitasPorUsuario } = require('../service/citaService');
+
+// Controlador para obtener todos los usuarios (opcional, no implementada en el router)
+const getUsuarios = async (req, res) => {
     try {
-        const { email, password, nombre, apellido, telefono } = req.body;
-        if (!email || !password || !nombre || !apellido || !telefono) {
-            return res.status(400).json({ error: 'Faltan campos obligatorios' });
-        }
-        const nuevoUsuario = { email, password, nombre, apellido, telefono };
-        const id = await usuarioService.crearUsuario(nuevoUsuario);
-        res.status(201).json({ id }); // Retorna el ID del nuevo usuario
+        const usuarios = await findAllUsuarios();
+        res.json(usuarios);
     } catch (error) {
-        res.status(500).json({ error: 'Error al crear usuario' });
+        res.status(500).json({ error: 'Error al obtener usuarios' });
     }
-}
+};
 
-// Controlador para obtener un usuario por su ID
-async function getUsuarioPorId(req, res) {
+// Controlador para obtener un usuario por su email (para autenticación)
+const getUsuario = async (req, res) => {
+    const { email } = req.params;
     try {
-        const { id } = req.params;
-        const usuario = await usuarioService.obtenerUsuarioPorId(id);
-        if (!usuario) {
-            return res.status(404).json({ error: 'Usuario no encontrado' });
+        const usuario = await getUsuarioPorEmail(email);
+        if (usuario) {
+            res.json(usuario);
+        } else {
+            res.status(404).json({ error: 'Usuario no encontrado' });
         }
-        res.json(usuario);
     } catch (error) {
         res.status(500).json({ error: 'Error al obtener usuario' });
     }
-}
+};
 
-const pos
+// Controlador para crear un nuevo usuario
+const postUsuario = async (req, res) => {
+    const usuarioData = req.body;
+    try {        const id_usuario = await addUsuario(usuarioData);
+        res.status(201).json({ id_usuario });
+    } catch (error) {
+        res.status(500).json({ error: 'Error al crear usuario' });
+    }
+};
+
+
+// Controlador para crear un nuevo usuario
+const putUsuario = async (req, res) => {
+    const { id } = req.params;
+    const usuarioData = req.body;
+    try {        const id_usuario = await addUsuario(usuarioData);
+        res.status(201).json({ id_usuario });
+    } catch (error) {
+        res.status(500).json({ error: 'Error al crear usuario' });
+    }
+};
+
+// Controlador para eliminar un usuario
+const deleteUsuario = async (req, res) => {
+    const { id } = req.params;
+    try {
+        await removeUsuario(id);
+        res.status(200).json({ message: 'Usuario eliminado correctamente' });
+    } catch (error) {
+        res.status(500).json({ error: 'Error al eliminar usuario' });
+    }
+};
 
 module.exports = {
-    getCrearUsuario,
-    getUsuarioPorId
+    getUsuarios,
+    getUsuario,
+    postUsuario,
+    putUsuario,
+    deleteUsuario
 };

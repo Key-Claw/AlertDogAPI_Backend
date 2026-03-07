@@ -2,6 +2,7 @@
 
 const db = require('../config/database').db;
 const {get} = require('../config/database').db;
+const {getDaysFromNow} = require('./usuarioService');
 
 // Función para obtener todas las citas (opcional, no implementada en el controlador)
 async function findAllCitas() {
