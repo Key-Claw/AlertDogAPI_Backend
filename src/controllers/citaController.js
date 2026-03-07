@@ -8,6 +8,22 @@ const { findAllCitas,
     modifyCita,
     removeCita } = require('../service/citaService');
 
+// Función auxiliar para mapear errores de negocio de citas a códigos HTTP adecuados
+// CITA_INVALIDA -> 400 (solicitud inválida)
+// CITA_DUPLICADA -> 409 (conflicto por recurso duplicado)
+// Otros errores -> 500 (error interno)
+const mapCitaBusinessError = (error, fallbackMessage) => {
+    if (error?.code === 'CITA_INVALIDA') {
+        return { status: 400, body: { error: error.message } };
+    }
+
+    if (error?.code === 'CITA_DUPLICADA') {
+        return { status: 409, body: { error: error.message } };
+    }
+
+    return { status: 500, body: { error: fallbackMessage } };
+};
+
 // Controlador para obtener todos las citas (opcional, no implementada en el router)
 const getCitas = async (req, res) => {
     try {
@@ -40,7 +56,9 @@ const postCita = async (req, res) => {
         const id_cita = await addCita(citaData);
         res.status(201).json({ id_cita });
     } catch (error) {
-        res.status(500).json({ error: 'Error al crear cita' });
+        // Convertir errores de negocio a la respuesta HTTP correcta
+        const mappedError = mapCitaBusinessError(error, 'Error al crear cita');
+        res.status(mappedError.status).json(mappedError.body);
     }
 };
 
@@ -53,7 +71,9 @@ const putCita = async (req, res) => {
         await modifyCita(id, citaData);
         res.status(200).json({ message: 'Cita modificada correctamente' });
     } catch (error) {
-        res.status(500).json({ error: 'Error al modificar cita' });
+        // Convertir errores de negocio a la respuesta HTTP correcta
+        const mappedError = mapCitaBusinessError(error, 'Error al modificar cita');
+        res.status(mappedError.status).json(mappedError.body);
     }
 };
 
