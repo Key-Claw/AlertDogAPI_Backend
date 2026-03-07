@@ -25,11 +25,11 @@ const getUsuarios = async (req, res) => {
     }
 };
 
-// Controlador para obtener un usuario por su email (para autenticación)
+// Controlador para obtener un usuario por su ID
 const getUsuario = async (req, res) => {
-    const { email } = req.params;
+    const { id } = req.params;
     try {
-        const usuario = await getUsuarioPorEmail(email);
+        const usuario = await getUsuarioPorId(id);
         if (usuario) {
             res.json(usuario);
         } else {
@@ -51,14 +51,15 @@ const postUsuario = async (req, res) => {
 };
 
 
-// Controlador para crear un nuevo usuario
+// Controlador para modificar un usuario
 const putUsuario = async (req, res) => {
     const { id } = req.params;
     const usuarioData = req.body;
-    try {        const id_usuario = await addUsuario(usuarioData);
-        res.status(201).json({ id_usuario });
+    try {
+        await modifyUsuario(id, usuarioData);
+        res.status(200).json({ message: 'Usuario modificado correctamente' });
     } catch (error) {
-        res.status(500).json({ error: 'Error al crear usuario' });
+        res.status(500).json({ error: 'Error al modificar usuario' });
     }
 };
 

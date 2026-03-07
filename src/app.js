@@ -1,13 +1,18 @@
 // 5.1 Archivo principal de la aplicación
 
-// Importar Express y crear una aplicación
+// Importar Express y Yargs para manejar argumentos de línea de comandos
 const express = require('express');
+const yargs = require('yargs/yargs');
+const { hideBin } = require('yargs/helpers');
 
+// Crear la aplicación Express y un router
 const app = express();
 const router = express.Router();
 
-const host = '127.0.0.1';
-const port = 3000;
+// Importar la configuración de la base de datos
+const argv = yargs(hideBin(process.argv)).argv;
+const host = argv.host || process.env.HOST || '0.0.0.0';
+const port = Number(argv.port || process.env.PORT || 3000);
 
 app.use(express.json());
 

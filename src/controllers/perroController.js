@@ -51,14 +51,15 @@ const postPerro = async (req, res) => {
 };
 
 
-// Controlador para crear un nuevo perro
+// Controlador para modificar un perro
 const putPerro = async (req, res) => {
     const { id } = req.params;
     const perroData = req.body;
-    try {        const id_perro = await addPerro(perroData);
-        res.status(201).json({ id_perro });
+    try {
+        await modifyPerro(id, perroData);
+        res.status(200).json({ message: 'Perro modificado correctamente' });
     } catch (error) {
-        res.status(500).json({ error: 'Error al crear perro' });
+        res.status(500).json({ error: 'Error al modificar perro' });
     }
 };
 

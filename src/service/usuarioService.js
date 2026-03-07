@@ -2,6 +2,32 @@
 
 const db = require('../configuration/database').db;
 
+const normalizeRol = (rol) => {
+    if (rol === undefined || rol === null) {
+        return rol;
+    }
+
+    if (typeof rol === 'string') {
+        const rolText = rol.trim().toLowerCase();
+        if (rolText === 'admin') {
+            return 1;
+        }
+        if (rolText === 'usuario' || rolText === 'cliente') {
+            return 0;
+        }
+    }
+
+    if (rol === true || rol === 1 || rol === '1') {
+        return 1;
+    }
+
+    if (rol === false || rol === 0 || rol === '0') {
+        return 0;
+    }
+
+    return rol;
+};
+
 // Función para obtener todos los usuarios (opcional, no implementada en el controlador)
 const findAllUsuarios = async () => {
     try {
@@ -34,7 +60,12 @@ const findUsuario = async (email, password) => {
 // Función para crear un nuevo usuario
 const addUsuario = async (usuario) => {
     try {
-        const [id] = await db('usuario').insert(usuario);
+        const usuarioToSave = {
+            ...usuario,
+            rol: normalizeRol(usuario.rol)
+        };
+
+        const [id] = await db('usuario').insert(usuarioToSave);
         return id; // Retorna el ID del nuevo usuario
     } catch (error) {
         console.error('Error al crear usuario:', error);
@@ -67,7 +98,12 @@ const getUsuarioPorId = async (id) => {
 // Función para modificar un usuario (opcional, no implementada en el controlador)
 const modifyUsuario = async (id, usuario) => {
     try {
-        await db('usuario').where({ id }).update(usuario);
+        const usuarioToUpdate = {
+            ...usuario,
+            rol: normalizeRol(usuario.rol)
+        };
+
+        await db('usuario').where({ id }).update(usuarioToUpdate);
     } catch (error) {
         console.error('Error al actualizar usuario:', error);
         throw error;
