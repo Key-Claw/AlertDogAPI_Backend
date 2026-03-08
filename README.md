@@ -1,18 +1,13 @@
 # AlertDogAPI Backend
 
-Backend REST para la gestion de usuarios, perros y citas.
+API REST para gestionar `usuarios`, `perros` y `citas`.
 
-## Estado del backend
-- CRUD completo para `usuarios`, `perros` y `citas`.
-- Reglas de negocio de citas implementadas:
-  - No permite citas duplicadas para el mismo perro en la misma fecha/hora.
-  - Valida campos obligatorios en creacion de cita (`fecha`, `hora`, `id_perro`).
-- Respuestas HTTP de negocio:
-  - `400` para cita invalida (`CITA_INVALIDA`).
-  - `404` para recursos inexistentes.
-  - `409` para cita duplicada (`CITA_DUPLICADA`).
+## Alcance del repositorio
+Este repositorio contiene solo el backend (Node.js + Express + Knex + MariaDB).
 
-## Tecnologias
+Existe un frontend en un repositorio separado que consume esta API via HTTP.
+
+## Stack
 - Node.js
 - Express
 - Knex
@@ -20,16 +15,7 @@ Backend REST para la gestion de usuarios, perros y citas.
 - js-yaml
 - yargs
 
-## Requisitos previos
-- Node.js 18+ (recomendado: 20+).
-- NPM.
-- MariaDB/MySQL corriendo en `localhost:3306`.
-- Base de datos `AlertDog` creada e inicializada con `db/init.sql`.
-
-Opcional:
-- Docker Desktop (para levantar DB + API con `docker compose`).
-
-## Estructura del proyecto
+## Estructura principal
 ```text
 src/
   app.js
@@ -37,34 +23,18 @@ src/
     config.js
     database.js
   controllers/
-    usuarioController.js
-    perroController.js
-    citaController.js
   routes/
-    usuarioRoute.js
-    perroRoute.js
-    citaRoute.js
   service/
-    usuarioService.js
-    perroService.js
-    citaService.js
 db/
   init.sql
 postman/
-  usuarios.postman_collection.json
-  perros.postman_collection.json
-  citas.postman_collection.json
 tests/
-  api-smoke-tests.ps1
-.github/
-  workflows/
-    backend-ci.yml
 ```
 
 ## Configuracion
-El backend utiliza `config.local.yaml` para la conexion a base de datos.
+La API usa `config.local.yaml` para conectar a base de datos.
 
-Ejemplo valido:
+Ejemplo:
 ```yaml
 db:
   host: localhost
@@ -77,14 +47,22 @@ service:
   port: 8080
 ```
 
-Nota importante: `password` debe ir como string (entre comillas) para evitar errores de autenticacion en `mysql2`.
+Tambien soporta variables de entorno:
+- `DB_HOST`
+- `DB_PORT`
+- `DB_USER`
+- `DB_PASSWORD`
+- `DB_NAME`
+- `HOST`
+- `PORT`
+- `CORS_ORIGINS` (CSV)
 
-## Scripts NPM
-- `npm run start`: inicia el backend en `http://0.0.0.0:3000`
-- `npm run dev`: inicia el backend con nodemon
-- `npm run test:api`: ejecuta pruebas rapidas de API en `tests/api-smoke-tests.ps1`
+## Scripts
+- `npm run start`: inicia API en `0.0.0.0:3000`
+- `npm run dev`: inicia API con nodemon
+- `npm run test:api`: smoke tests en PowerShell
 
-## Endpoints implementados
+## Endpoints
 ### Usuarios
 - `GET /usuarios`
 - `GET /usuarios/:id`
@@ -106,119 +84,54 @@ Nota importante: `password` debe ir como string (entre comillas) para evitar err
 - `PUT /citas/:id`
 - `DELETE /citas/:id`
 
-## Codigos HTTP relevantes
-- `200`: consulta o actualizacion correcta
-- `201`: creacion correcta
-- `400`: datos invalidos en citas (`CITA_INVALIDA`)
-- `404`: recurso no encontrado
-- `409`: conflicto por cita duplicada (`CITA_DUPLICADA`)
-- `500`: error interno no controlado
+## Reglas de negocio
+- Citas duplicadas para el mismo perro/fecha/hora -> `409` (`CITA_DUPLICADA`).
+- Campos obligatorios de cita ausentes -> `400` (`CITA_INVALIDA`).
+- Recurso inexistente -> `404`.
 
 ## Base de datos
-El archivo `db/init.sql` contiene:
-- Creacion de tablas `usuario`, `perro`, `cita`
-- Relaciones entre tablas
-- Datos iniciales de prueba
+`db/init.sql` crea tablas y datos semilla:
+- `usuario`
+- `perro`
+- `cita`
 
-Incluye integridad referencial con `ON DELETE CASCADE`.
-
-## Testing local
-Se incluyo una carpeta dedicada para pruebas: `tests/`.
-
-Archivo actual:
-- `tests/api-smoke-tests.ps1`
-
-Cobertura de estas pruebas:
-- Salud de API (`GET /`)
-- Listados principales (`/usuarios`, `/perros`, `/citas`)
-- Caso `404` de usuario inexistente
-- Caso `404` en actualizacion/eliminacion de recursos inexistentes
-- Caso `409` por cita duplicada
-- Caso `400` por cita invalida
-
-Ejecucion:
-```bash
-npm run test:api
-```
-
-Importante:
-- Estas pruebas requieren que la API este corriendo en `http://localhost:3000`.
-- Tambien requieren que MariaDB/MySQL este disponible en `localhost:3306`.
-- Si la base de datos no esta activa, los endpoints de datos responderan `500` por `ECONNREFUSED`.
-
-## CI con GitHub Actions
-Se implemento un pipeline en:
-- `.github/workflows/backend-ci.yml`
-
-El workflow hace lo siguiente:
-1. Se ejecuta en `push` a `main`, `dev` y `feature/**`.
-2. Se ejecuta en `pull_request` hacia `main` y `dev`.
-3. Levanta un servicio `mariadb`.
-4. Instala dependencias con `npm ci`.
-5. Importa `db/init.sql`.
-6. Arranca el backend.
-7. Ejecuta `tests/api-smoke-tests.ps1`.
-8. Si algo falla, muestra los logs del servidor.
-
-## Docker
-Se agrego dockerizacion completa para backend y base de datos.
-
-Archivos:
-- `Dockerfile`
-- `.dockerignore`
-- `docker-compose.yml`
-
-Servicios incluidos en `docker-compose.yml`:
-1. `db` (MariaDB 11)
-2. `api` (Node.js + Express)
-
-Como ejecutar con Docker:
-```bash
-docker compose up --build
-```
-
-Si necesitas levantar en background:
-```bash
-docker compose up -d --build
-```
-
-Para detener y eliminar contenedores:
-```bash
-docker compose down
-```
-
-Para detener y eliminar tambien el volumen de datos:
-```bash
-docker compose down -v
-```
-
-## Postman
-Las colecciones de Postman estan en la carpeta `postman/`:
-- `postman/usuarios.postman_collection.json`
-- `postman/perros.postman_collection.json`
-- `postman/citas.postman_collection.json`
-
-## Arranque rapido
-1. Crear base de datos `AlertDog` en MariaDB/MySQL.
+## Arranque local (MariaDB instalada en host)
+1. Crear base `AlertDog`.
 2. Importar `db/init.sql`.
-3. Revisar `config.local.yaml`.
+3. Ajustar `config.local.yaml`.
 4. Instalar dependencias:
 ```bash
 npm install
 ```
-5. Iniciar backend:
+5. Levantar API:
 ```bash
-npm run start
+npm run dev
 ```
-6. Ejecutar pruebas rapidas:
+
+## Arranque con Docker (DB)
+Levantar solo la base:
+```bash
+docker compose up -d db
+```
+
+Si necesitas reiniciar base y volumen:
+```bash
+docker compose down -v
+docker compose up -d db
+```
+
+Importar SQL manualmente desde host:
+```bash
+Get-Content -Raw .\db\init.sql | docker exec -i alertdog_db mariadb -uadmin -p1234 AlertDog
+```
+
+## Testing
+Con API levantada en `http://localhost:3000`:
 ```bash
 npm run test:api
 ```
 
-## Troubleshooting rapido
-- Error `ECONNREFUSED 127.0.0.1:3306`:
-  - Verifica que MariaDB/MySQL este iniciado.
-  - Verifica host/puerto/credenciales en `config.local.yaml`.
-- `docker: command not found`:
-  - Docker no esta instalado o no esta en PATH.
-  - Levanta MariaDB local manualmente y usa `npm run start`.
+## Troubleshooting
+- `ECONNREFUSED 127.0.0.1:3306`: la DB no esta arriba o credenciales no coinciden.
+- Error de CORS desde frontend: revisar `CORS_ORIGINS`.
+- Si usas Docker en Windows y falla init automatico, importar `db/init.sql` manualmente.

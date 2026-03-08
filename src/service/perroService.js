@@ -1,7 +1,8 @@
-// Servicio para manejar la lógica de negocio relacionada con perros
+// Capa de acceso/negocio para la entidad perro.
 
 const db = require('../configuration/database').db;
 
+// Calcula diferencia de dias tomando medianoche para evitar sesgos por hora.
 const getDaysFromNow = (date) => {
     const today = new Date();
     const todayMidnight = new Date(today.getFullYear(), today.getMonth(), today.getDate());
@@ -87,7 +88,7 @@ const removePerro = async (id) => {
     }
 }
 
-// Función utilitaria para verificar si un perro tiene una cita próxima
+// Regla utilitaria: detecta si existe cita en ventana [hoy, hoy + 7 dias].
 const tieneCitaProxima = async (id_perro) => {
     try {
         const citas = await db('cita').where({ id_perro });

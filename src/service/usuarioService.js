@@ -1,7 +1,8 @@
-// Servicio para manejar la lógica de negocio relacionada con usuarios
+// Capa de acceso/negocio para la entidad usuario.
 
 const db = require('../configuration/database').db;
 
+// Normaliza variantes de rol recibidas desde UI/API hacia formato booleano numerico.
 const normalizeRol = (rol) => {
     if (rol === undefined || rol === null) {
         return rol;
@@ -39,14 +40,15 @@ const findAllUsuarios = async () => {
     }
 };
 
-// Función para buscar un usuario por su email y contraseña (para autenticación)
+// Busca un usuario para autenticacion basica.
+// Nota: comparacion de password en texto plano; idealmente migrar a bcrypt.
 const findUsuario = async (email, password) => {
     try {
         const usuario = await getUsuarioPorEmail(email);
         if (!usuario) {
             return null; // Usuario no encontrado
         }
-        // Aquí podríamos agregar lógica para verificar la contraseña, por ejemplo usando bcrypt
+        // Comparacion simple actual, mantenida por compatibilidad.
         if (usuario.password !== password) {
             return null; // Contraseña incorrecta
         }
@@ -133,7 +135,7 @@ const removeUsuario = async (id) => {
     }
 }
 
-// Función para verificar si un usuario existe por su id
+// Util para validaciones de relaciones y reglas de negocio.
 const userExisteById = async (id) => {
     try {
         const usuario = await db('usuario').where({ id }).first();
