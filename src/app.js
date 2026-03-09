@@ -47,7 +47,7 @@ const corsOptions = {
 app.use(express.json());
 app.use(cors(corsOptions));
 
-// Routers desacoplados por dominio de negocio.
+// Routers desacoplados por dominio de negocio. 
 const usuarioRoutes = require('./routes/usuarioRoute');
 const perroRoutes = require('./routes/perroRoute');
 const citaRoutes = require('./routes/citaRoute');
@@ -60,7 +60,7 @@ app.get('/', (req, res) => {
 	});
 });
 
-// Registro de endpoints REST.
+// Registro de endpoints REST. 
 app.use('/', usuarioRoutes);
 app.use('/', perroRoutes);
 app.use('/', citaRoutes);

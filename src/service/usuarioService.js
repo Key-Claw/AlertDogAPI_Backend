@@ -42,14 +42,14 @@ const addUsuario = async (usuario) => {
         };
 
         const [id] = await db('usuario').insert(usuarioToSave);
-        return id; // Retorna el ID del nuevo usuario
+        return id; // Retorna el ID del nuevo usuario 
     } catch (error) {
         console.error('Error al crear usuario:', error);
         throw error;
     }
 };
 
-// Función para obtener un usuario por su email
+// Función para obtener un usuario por su email 
 const getUsuarioPorEmail = async (email) => {
     try {
         const usuario = await db('usuario').where({ email }).first();
@@ -60,7 +60,7 @@ const getUsuarioPorEmail = async (email) => {
     }
 };
 
-// Función para obtener un usuario por su ID
+// Función para obtener un usuario por su ID 
 const getUsuarioPorId = async (id) => {
     try {
         const usuario = await db('usuario').where({ id }).first();
@@ -71,7 +71,7 @@ const getUsuarioPorId = async (id) => {
     }
 };
 
-// Modificar un usuario por ID
+// Modificar un usuario por ID  
 const modifyUsuario = async (id, usuario) => {
     try {
         const usuarioToUpdate = {
@@ -87,7 +87,7 @@ const modifyUsuario = async (id, usuario) => {
     }
 };
 
-// Modificar la contraseña de un usuario
+// Modificar la contraseña de un usuario 
 const modifyPassword = async (id, newPassword) => {
     try {
         const updatedRows = await db('usuario').where({ id }).update({ password: newPassword });
@@ -98,7 +98,7 @@ const modifyPassword = async (id, newPassword) => {
     }
 }
 
-// Eliminar un usuario por ID
+// Eliminar un usuario por ID 
 const removeUsuario = async (id) => {
     try {
         const deletedRows = await db('usuario').where({ id }).del();
@@ -109,11 +109,11 @@ const removeUsuario = async (id) => {
     }
 }
 
-// Util para validaciones de relaciones y reglas de negocio.
+// Util para validaciones de relaciones y reglas de negocio. 
 const userExisteById = async (id) => {
     try {
         const usuario = await db('usuario').where({ id }).first();
-        return !!usuario; // Retorna true si el usuario existe, false si no
+        return !!usuario; // Retorna true si el usuario existe, false si no 
     } catch (error) {
         console.error('Error al verificar existencia de usuario:', error);
         throw error;

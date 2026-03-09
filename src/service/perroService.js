@@ -3,7 +3,7 @@
 const db = require('../configuration/database').db;
 const { getDaysFromNow } = require('../utils/domainRules');
 
-// Obtener todos los perros
+// Obtener todos los perros con filtros opcionales: id_usuario, raza, q (busqueda general en nombre y raza).
 const findAllPerros = async (filters = {}) => {
     try {
         let query = db('perro').select('*');
@@ -32,7 +32,7 @@ const findAllPerros = async (filters = {}) => {
     }
 };
 
-// Función para buscar un perro por su ID
+// Función para buscar un perro por su ID 
 const findPerro = async (id) => {
     try {
         const perro = await db('perro').where({ id }).first();
@@ -43,7 +43,7 @@ const findPerro = async (id) => {
     }
 };
 
-// Función para agregar un nuevo perro
+// Función para agregar un nuevo perro a un usuario
 const addPerro = async (perro) => {
     try {
         const [id] = await db('perro').insert(perro);

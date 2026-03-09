@@ -10,6 +10,7 @@ services:
     ports:
       - "3306:3306"
     volumes:
+      - ./db/init.sql:/docker-entrypoint-initdb.d/init.sql
       - mariadb_data:/var/lib/mysql
     healthcheck:
       test: ["CMD", "mariadb-admin", "ping", "-h", "127.0.0.1", "-u", "root", "-proot"]
