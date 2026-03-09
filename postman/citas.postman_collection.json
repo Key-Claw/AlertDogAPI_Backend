@@ -21,20 +21,7 @@
                                                               "citas"
                                                           ]
                                              }
-                                 },
-                     "event":  [
-                                   {
-                                       "listen":  "test",
-                                       "script":  {
-                                                      "type":  "text/javascript",
-                                                      "exec":  [
-                                                                   "pm.test(\u0027Status code is 200\u0027, function () { pm.response.to.have.status(200); });",
-                                                                   "pm.test(\u0027Response time \u003c 1500ms\u0027, function () { pm.expect(pm.response.responseTime).to.be.below(1500); });",
-                                                                   "pm.test(\u0027Response body shape is valid\u0027, function () { const body = pm.response.json(); pm.expect(body).to.satisfy((v)=\u003e Array.isArray(v) || (v \u0026\u0026 typeof v === \u0027object\u0027)); });"
-                                                               ]
-                                                  }
-                                   }
-                               ]
+                                 }
                  },
                  {
                      "name":  "GET /citas/:id",
@@ -53,20 +40,7 @@
                                                               "1"
                                                           ]
                                              }
-                                 },
-                     "event":  [
-                                   {
-                                       "listen":  "test",
-                                       "script":  {
-                                                      "type":  "text/javascript",
-                                                      "exec":  [
-                                                                   "pm.test(\u0027Status code is 200\u0027, function () { pm.response.to.have.status(200); });",
-                                                                   "pm.test(\u0027Response time \u003c 1500ms\u0027, function () { pm.expect(pm.response.responseTime).to.be.below(1500); });",
-                                                                   "pm.test(\u0027Response body shape is valid\u0027, function () { const body = pm.response.json(); pm.expect(body).to.satisfy((v)=\u003e Array.isArray(v) || (v \u0026\u0026 typeof v === \u0027object\u0027)); });"
-                                                               ]
-                                                  }
-                                   }
-                               ]
+                                 }
                  },
                  {
                      "name":  "POST /citas",
@@ -91,20 +65,7 @@
                                                               "citas"
                                                           ]
                                              }
-                                 },
-                     "event":  [
-                                   {
-                                       "listen":  "test",
-                                       "script":  {
-                                                      "type":  "text/javascript",
-                                                      "exec":  [
-                                                                   "pm.test(\u0027Status code is 200 or 201\u0027, function () { pm.expect([200,201]).to.include(pm.response.code); });",
-                                                                   "pm.test(\u0027Response body is object\u0027, function () { const body = pm.response.json(); pm.expect(body).to.be.an(\u0027object\u0027); });",
-                                                                   "pm.test(\u0027Response has created id field\u0027, function () { const body = pm.response.json(); pm.expect(Object.keys(body).some((k)=\u003e/^id_/.test(k))).to.eql(true); });"
-                                                               ]
-                                                  }
-                                   }
-                               ]
+                                 }
                  },
                  {
                      "name":  "PUT /citas/:id",
@@ -130,20 +91,7 @@
                                                               "1"
                                                           ]
                                              }
-                                 },
-                     "event":  [
-                                   {
-                                       "listen":  "test",
-                                       "script":  {
-                                                      "type":  "text/javascript",
-                                                      "exec":  [
-                                                                   "pm.test(\u0027Status code is 200\u0027, function () { pm.response.to.have.status(200); });",
-                                                                   "pm.test(\u0027Response body is object\u0027, function () { const body = pm.response.json(); pm.expect(body).to.be.an(\u0027object\u0027); });",
-                                                                   "pm.test(\u0027Response contains message\u0027, function () { const body = pm.response.json(); pm.expect(body).to.have.property(\u0027message\u0027); });"
-                                                               ]
-                                                  }
-                                   }
-                               ]
+                                 }
                  },
                  {
                      "name":  "DELETE /citas/:id",
@@ -162,20 +110,7 @@
                                                               "1"
                                                           ]
                                              }
-                                 },
-                     "event":  [
-                                   {
-                                       "listen":  "test",
-                                       "script":  {
-                                                      "type":  "text/javascript",
-                                                      "exec":  [
-                                                                   "pm.test(\u0027Status code is 200\u0027, function () { pm.response.to.have.status(200); });",
-                                                                   "pm.test(\u0027Response body is object\u0027, function () { const body = pm.response.json(); pm.expect(body).to.be.an(\u0027object\u0027); });",
-                                                                   "pm.test(\u0027Response contains message\u0027, function () { const body = pm.response.json(); pm.expect(body).to.have.property(\u0027message\u0027); });"
-                                                               ]
-                                                  }
-                                   }
-                               ]
+                                 }
                  }
              ],
     "variable":  [
