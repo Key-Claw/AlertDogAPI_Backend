@@ -4,6 +4,10 @@
 
 API REST para gestionar `usuarios`, `perros` y `citas`.
 
+## Documentacion adicional
+- `AUTORIA_BACKEND.md`: tutorial explicativo de autoria tecnica del backend.
+- `DEPLOYMENT_CHECKLIST.md`: guia de verificaciones para despliegue.
+
 ## Estado actual (Marzo 2026)
 - Backend operativo en Node + Express con persistencia MariaDB via Knex.
 - CI ejecuta pruebas de smoke, CRUD de usuarios y flujo integrado usuario -> perro -> cita.
@@ -37,9 +41,12 @@ src/
 db/
   init.sql                   # esquema + seed
 tests/
-  api-smoke-tests.ps1        # smoke basico
-  api-usuarios-crud-tests.ps1# CRUD usuarios
-  api-flujo-perros-citas-tests.ps1 # flujo integrado
+  unit/
+    domainRules.test.js      # unitarias obligatorias (reglas de dominio)
+  integration/
+    api-smoke-tests.ps1      # smoke basico
+    api-usuarios-crud-tests.ps1 # CRUD usuarios
+    api-flujo-perros-citas-tests.ps1 # flujo integrado
 .github/workflows/
   backend-ci.yml             # pipeline CI
 ```
@@ -77,6 +84,8 @@ Tambien soporta variables de entorno (prioridad sobre YAML):
 - `npm run test:api:usuarios`: CRUD de usuarios.
 - `npm run test:api:flujo`: flujo usuario -> perro -> cita.
 - `npm run test:api:all`: ejecuta las tres suites anteriores en cadena.
+- `npm run test:integration`: alias de pruebas de integracion (`test:api:all`).
+- `npm run test:unit`: pruebas unitarias (Jest).
 
 ## Endpoints
 ### Usuarios
@@ -137,6 +146,7 @@ Get-Content -Raw .\db\init.sql | docker exec -i alertdog_db mariadb -uadmin -p12
 ## Testing (local)
 Con backend arriba en `http://localhost:3000`:
 ```bash
+npm run test:unit
 npm run test:api
 npm run test:api:usuarios
 npm run test:api:flujo
