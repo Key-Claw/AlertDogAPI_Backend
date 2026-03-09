@@ -1,13 +1,22 @@
 # AlertDogAPI Backend
 
+[![Backend CI](https://github.com/Key-Claw/AlertDogAPI_Backend/actions/workflows/backend-ci.yml/badge.svg)](https://github.com/Key-Claw/AlertDogAPI_Backend/actions/workflows/backend-ci.yml)
+
 API REST para gestionar `usuarios`, `perros` y `citas`.
 
-## Alcance del repositorio
-Este repositorio contiene solo el backend (Node.js + Express + Knex + MariaDB).
+## Estado actual (Marzo 2026)
+- Backend operativo en Node + Express con persistencia MariaDB via Knex.
+- CI ejecuta pruebas de smoke, CRUD de usuarios y flujo integrado usuario -> perro -> cita.
+- Se incluyen suites PowerShell para validar reglas de negocio y regresiones funcionales.
 
-Existe un frontend en un repositorio separado que consume esta API via HTTP.
+## Que contiene este repositorio
+Este repositorio contiene solo el backend:
+- Node.js + Express para exponer endpoints HTTP.
+- Knex + MariaDB para persistencia.
+- Tests PowerShell para validacion de API y flujos de negocio.
+- CI en GitHub Actions para validar automaticamente cada push/PR.
 
-## Stack
+## Stack tecnico
 - Node.js
 - Express
 - Knex
@@ -18,21 +27,25 @@ Existe un frontend en un repositorio separado que consume esta API via HTTP.
 ## Estructura principal
 ```text
 src/
-  app.js
+  app.js                     # bootstrap de servidor y middlewares
   configuration/
-    config.js
-    database.js
-  controllers/
-  routes/
-  service/
+    config.js                # carga config YAML/CLI
+    database.js              # inicializacion de Knex
+  controllers/               # capa HTTP
+  routes/                    # definicion de endpoints
+  service/                   # logica de acceso a datos
 db/
-  init.sql
-postman/
+  init.sql                   # esquema + seed
 tests/
+  api-smoke-tests.ps1        # smoke basico
+  api-usuarios-crud-tests.ps1# CRUD usuarios
+  api-flujo-perros-citas-tests.ps1 # flujo integrado
+.github/workflows/
+  backend-ci.yml             # pipeline CI
 ```
 
 ## Configuracion
-La API usa `config.local.yaml` para conectar a base de datos.
+La API usa `config.local.yaml` por defecto para DB y servicio.
 
 Ejemplo:
 ```yaml
@@ -47,7 +60,7 @@ service:
   port: 8080
 ```
 
-Tambien soporta variables de entorno:
+Tambien soporta variables de entorno (prioridad sobre YAML):
 - `DB_HOST`
 - `DB_PORT`
 - `DB_USER`
@@ -57,10 +70,13 @@ Tambien soporta variables de entorno:
 - `PORT`
 - `CORS_ORIGINS` (CSV)
 
-## Scripts
-- `npm run start`: inicia API en `0.0.0.0:3000`
-- `npm run dev`: inicia API con nodemon
-- `npm run test:api`: smoke tests en PowerShell
+## Scripts npm
+- `npm run start`: arranca API en `0.0.0.0:3000`.
+- `npm run dev`: arranca API con nodemon.
+- `npm run test:api`: smoke tests de API.
+- `npm run test:api:usuarios`: CRUD de usuarios.
+- `npm run test:api:flujo`: flujo usuario -> perro -> cita.
+- `npm run test:api:all`: ejecuta las tres suites anteriores en cadena.
 
 ## Endpoints
 ### Usuarios
@@ -84,54 +100,69 @@ Tambien soporta variables de entorno:
 - `PUT /citas/:id`
 - `DELETE /citas/:id`
 
-## Reglas de negocio
-- Citas duplicadas para el mismo perro/fecha/hora -> `409` (`CITA_DUPLICADA`).
-- Campos obligatorios de cita ausentes -> `400` (`CITA_INVALIDA`).
-- Recurso inexistente -> `404`.
+## Reglas de negocio ya cubiertas
+- Citas duplicadas (mismo perro/fecha/hora) devuelven `409`.
+- Citas con campos faltantes devuelven `400`.
+- Recursos inexistentes devuelven `404`.
 
-## Base de datos
-`db/init.sql` crea tablas y datos semilla:
-- `usuario`
-- `perro`
-- `cita`
-
-## Arranque local (MariaDB instalada en host)
+## Como levantar en local
 1. Crear base `AlertDog`.
 2. Importar `db/init.sql`.
-3. Ajustar `config.local.yaml`.
+3. Revisar `config.local.yaml`.
 4. Instalar dependencias:
 ```bash
 npm install
 ```
-5. Levantar API:
+5. Arrancar backend:
 ```bash
 npm run dev
 ```
 
-## Arranque con Docker (DB)
-Levantar solo la base:
+## Opcion con Docker (solo DB)
 ```bash
 docker compose up -d db
 ```
 
-Si necesitas reiniciar base y volumen:
+Reiniciar DB y volumen:
 ```bash
 docker compose down -v
 docker compose up -d db
 ```
 
-Importar SQL manualmente desde host:
-```bash
+Importar SQL manualmente (Windows PowerShell):
+```powershell
 Get-Content -Raw .\db\init.sql | docker exec -i alertdog_db mariadb -uadmin -p1234 AlertDog
 ```
 
-## Testing
-Con API levantada en `http://localhost:3000`:
+## Testing (local)
+Con backend arriba en `http://localhost:3000`:
 ```bash
 npm run test:api
+npm run test:api:usuarios
+npm run test:api:flujo
 ```
 
+O todo junto:
+```bash
+npm run test:api:all
+```
+
+## CI (GitHub Actions)
+Workflow: `.github/workflows/backend-ci.yml`
+
+Se ejecuta en:
+- `push` a `main`, `dev`, `feature/**`
+- `pull_request` a `main` y `dev`
+- ejecucion manual (`workflow_dispatch`)
+
+Que hace el pipeline:
+1. Levanta MariaDB de prueba.
+2. Carga `db/init.sql`.
+3. Arranca backend.
+4. Ejecuta `test:api`, `test:api:usuarios` y `test:api:flujo`.
+5. Si falla, imprime logs para diagnostico.
+
 ## Troubleshooting
-- `ECONNREFUSED 127.0.0.1:3306`: la DB no esta arriba o credenciales no coinciden.
-- Error de CORS desde frontend: revisar `CORS_ORIGINS`.
-- Si usas Docker en Windows y falla init automatico, importar `db/init.sql` manualmente.
+- `ECONNREFUSED 127.0.0.1:3306`: DB apagada o credenciales incorrectas.
+- Errores CORS desde frontend: revisar `CORS_ORIGINS`.
+- Si falla import automatica en Windows + Docker: importar `db/init.sql` manualmente.
