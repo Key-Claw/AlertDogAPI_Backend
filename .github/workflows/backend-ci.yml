@@ -58,7 +58,7 @@ jobs:
       - name: Wait for MariaDB to be ready
         run: |
           for i in {1..30}; do
-            if mariadb -h 127.0.0.1 -u root -proot -e "SELECT 1"; then
+            if mysql -h 127.0.0.1 -u root -proot -e "SELECT 1"; then
               echo "MariaDB is ready"
               exit 0
             fi
@@ -71,7 +71,7 @@ jobs:
 
       # 5) Crear esquema y datos semilla para los tests.
       - name: Initialize database schema and seed data
-        run: mariadb -h 127.0.0.1 -u root -proot AlertDog < db/init.sql
+        run: mysql -h 127.0.0.1 -u root -proot AlertDog < db/init.sql
 
       # 6) Levantar la API en segundo plano.
       - name: Start backend
