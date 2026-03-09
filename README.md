@@ -21,6 +21,15 @@ Documentos relacionados:
 - Validacion automatica con pruebas unitarias e integracion.
 - Reglas de negocio implementadas para errores `400`, `404` y conflictos `409`.
 - CORS habilitado para desarrollo local en `5173`, `4173` y `4174`.
+- Eliminacion en cascada activa por esquema SQL (`usuario -> perro -> cita`).
+- Suite de pruebas validada extremo a extremo (unit + API + flujo integrado).
+
+## Novedades recientes
+- Se valido el flujo de eliminacion en cascada usando `DELETE /usuarios/:id`.
+- Se mantuvo consistencia de contratos entre backend y frontend para usuarios, perros y citas.
+- Se genero reporte de pruebas en:
+  - `TEST_REPORT.md` (raiz del workspace)
+  - `AlertDogAPI_Backend/TEST_REPORT.md`
 
 ## Tecnologias usadas (que son y para que sirven)
 | Tecnologia | Que es | Para que se usa en este proyecto |
@@ -197,6 +206,15 @@ Citas:
 - `POST /citas`
 - `PUT /citas/:id`
 - `DELETE /citas/:id`
+
+## Cascade Delete (DB)
+La eliminacion en cascada depende del esquema de base de datos:
+- `FOREIGN KEY (id_usuario) REFERENCES usuario(id) ON DELETE CASCADE`
+- `FOREIGN KEY (id_perro) REFERENCES perro(id) ON DELETE CASCADE`
+
+Efecto:
+- Si se elimina un usuario, se eliminan sus perros.
+- Al eliminar esos perros, se eliminan automaticamente sus citas.
 
 ## CI (GitHub Actions)
 Workflow: `.github/workflows/backend-ci.yml`
