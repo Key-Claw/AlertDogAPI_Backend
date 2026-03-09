@@ -1,33 +1,7 @@
 // Capa de acceso/negocio para la entidad usuario.
 
 const db = require('../configuration/database').db;
-
-// Normaliza variantes de rol recibidas desde UI/API hacia formato booleano numerico.
-const normalizeRol = (rol) => {
-    if (rol === undefined || rol === null) {
-        return rol;
-    }
-
-    if (typeof rol === 'string') {
-        const rolText = rol.trim().toLowerCase();
-        if (rolText === 'admin') {
-            return 1;
-        }
-        if (rolText === 'usuario' || rolText === 'cliente') {
-            return 0;
-        }
-    }
-
-    if (rol === true || rol === 1 || rol === '1') {
-        return 1;
-    }
-
-    if (rol === false || rol === 0 || rol === '0') {
-        return 0;
-    }
-
-    return rol;
-};
+const { normalizeRol } = require('../utils/domainRules');
 
 // Obtener todos los usuarios
 const findAllUsuarios = async () => {

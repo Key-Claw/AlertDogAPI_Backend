@@ -6,7 +6,8 @@
     "test:api": "powershell -ExecutionPolicy Bypass -File tests/api-smoke-tests.ps1",
     "test:api:usuarios": "powershell -ExecutionPolicy Bypass -File tests/api-usuarios-crud-tests.ps1",
     "test:api:flujo": "powershell -ExecutionPolicy Bypass -File tests/api-flujo-perros-citas-tests.ps1",
-    "test:api:all": "npm run test:api && npm run test:api:usuarios && npm run test:api:flujo"
+    "test:api:all": "npm run test:api && npm run test:api:usuarios && npm run test:api:flujo",
+    "test:unit": "jest --runInBand"
   },
   "dependencies": {
     "bcrypt": "^5.1.1",
@@ -19,6 +20,7 @@
     "yargs": "^17.7.2"
   },
   "devDependencies": {
+    "jest": "^29.7.0",
     "nodemon": "^3.1.11"
   }
 }

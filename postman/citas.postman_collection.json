@@ -1,116 +1,187 @@
-{
-  "info": {
-    "_postman_id": "a1b2c3d4-citas-collection-0001",
-    "name": "AlertDogAPI - Citas",
-    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
-  },
-  "item": [
-    {
-      "name": "GET /citas",
-      "request": {
-        "method": "GET",
-        "header": [],
-        "url": {
-          "raw": "{{baseUrl}}/citas",
-          "host": [
-            "{{baseUrl}}"
-          ],
-          "path": [
-            "citas"
-          ]
-        }
-      }
-    },
-    {
-      "name": "GET /citas/:id",
-      "request": {
-        "method": "GET",
-        "header": [],
-        "url": {
-          "raw": "{{baseUrl}}/citas/1",
-          "host": [
-            "{{baseUrl}}"
-          ],
-          "path": [
-            "citas",
-            "1"
-          ]
-        }
-      }
-    },
-    {
-      "name": "POST /citas",
-      "request": {
-        "method": "POST",
-        "header": [
-          {
-            "key": "Content-Type",
-            "value": "application/json"
-          }
-        ],
-        "body": {
-          "mode": "raw",
-          "raw": "{\n  \"fecha\": \"2026-03-20\",\n  \"hora\": \"10:30:00\",\n  \"id_perro\": 1\n}"
-        },
-        "url": {
-          "raw": "{{baseUrl}}/citas",
-          "host": [
-            "{{baseUrl}}"
-          ],
-          "path": [
-            "citas"
-          ]
-        }
-      }
-    },
-    {
-      "name": "PUT /citas/:id",
-      "request": {
-        "method": "PUT",
-        "header": [
-          {
-            "key": "Content-Type",
-            "value": "application/json"
-          }
-        ],
-        "body": {
-          "mode": "raw",
-          "raw": "{\n  \"fecha\": \"2026-03-22\",\n  \"hora\": \"11:00:00\"\n}"
-        },
-        "url": {
-          "raw": "{{baseUrl}}/citas/1",
-          "host": [
-            "{{baseUrl}}"
-          ],
-          "path": [
-            "citas",
-            "1"
-          ]
-        }
-      }
-    },
-    {
-      "name": "DELETE /citas/:id",
-      "request": {
-        "method": "DELETE",
-        "header": [],
-        "url": {
-          "raw": "{{baseUrl}}/citas/1",
-          "host": [
-            "{{baseUrl}}"
-          ],
-          "path": [
-            "citas",
-            "1"
-          ]
-        }
-      }
-    }
-  ],
-  "variable": [
-    {
-      "key": "baseUrl",
-      "value": "http://127.0.0.1:3000"
-    }
-  ]
+﻿{
+    "info":  {
+                 "_postman_id":  "a1b2c3d4-citas-collection-0001",
+                 "name":  "AlertDogAPI - Citas",
+                 "schema":  "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+             },
+    "item":  [
+                 {
+                     "name":  "GET /citas",
+                     "request":  {
+                                     "method":  "GET",
+                                     "header":  [
+
+                                                ],
+                                     "url":  {
+                                                 "raw":  "{{baseUrl}}/citas",
+                                                 "host":  [
+                                                              "{{baseUrl}}"
+                                                          ],
+                                                 "path":  [
+                                                              "citas"
+                                                          ]
+                                             }
+                                 },
+                     "event":  [
+                                   {
+                                       "listen":  "test",
+                                       "script":  {
+                                                      "type":  "text/javascript",
+                                                      "exec":  [
+                                                                   "pm.test(\u0027Status code is 200\u0027, function () { pm.response.to.have.status(200); });",
+                                                                   "pm.test(\u0027Response time \u003c 1500ms\u0027, function () { pm.expect(pm.response.responseTime).to.be.below(1500); });",
+                                                                   "pm.test(\u0027Response body shape is valid\u0027, function () { const body = pm.response.json(); pm.expect(body).to.satisfy((v)=\u003e Array.isArray(v) || (v \u0026\u0026 typeof v === \u0027object\u0027)); });"
+                                                               ]
+                                                  }
+                                   }
+                               ]
+                 },
+                 {
+                     "name":  "GET /citas/:id",
+                     "request":  {
+                                     "method":  "GET",
+                                     "header":  [
+
+                                                ],
+                                     "url":  {
+                                                 "raw":  "{{baseUrl}}/citas/1",
+                                                 "host":  [
+                                                              "{{baseUrl}}"
+                                                          ],
+                                                 "path":  [
+                                                              "citas",
+                                                              "1"
+                                                          ]
+                                             }
+                                 },
+                     "event":  [
+                                   {
+                                       "listen":  "test",
+                                       "script":  {
+                                                      "type":  "text/javascript",
+                                                      "exec":  [
+                                                                   "pm.test(\u0027Status code is 200\u0027, function () { pm.response.to.have.status(200); });",
+                                                                   "pm.test(\u0027Response time \u003c 1500ms\u0027, function () { pm.expect(pm.response.responseTime).to.be.below(1500); });",
+                                                                   "pm.test(\u0027Response body shape is valid\u0027, function () { const body = pm.response.json(); pm.expect(body).to.satisfy((v)=\u003e Array.isArray(v) || (v \u0026\u0026 typeof v === \u0027object\u0027)); });"
+                                                               ]
+                                                  }
+                                   }
+                               ]
+                 },
+                 {
+                     "name":  "POST /citas",
+                     "request":  {
+                                     "method":  "POST",
+                                     "header":  [
+                                                    {
+                                                        "key":  "Content-Type",
+                                                        "value":  "application/json"
+                                                    }
+                                                ],
+                                     "body":  {
+                                                  "mode":  "raw",
+                                                  "raw":  "{\n  \"fecha\": \"2026-03-20\",\n  \"hora\": \"10:30:00\",\n  \"id_perro\": 1\n}"
+                                              },
+                                     "url":  {
+                                                 "raw":  "{{baseUrl}}/citas",
+                                                 "host":  [
+                                                              "{{baseUrl}}"
+                                                          ],
+                                                 "path":  [
+                                                              "citas"
+                                                          ]
+                                             }
+                                 },
+                     "event":  [
+                                   {
+                                       "listen":  "test",
+                                       "script":  {
+                                                      "type":  "text/javascript",
+                                                      "exec":  [
+                                                                   "pm.test(\u0027Status code is 200 or 201\u0027, function () { pm.expect([200,201]).to.include(pm.response.code); });",
+                                                                   "pm.test(\u0027Response body is object\u0027, function () { const body = pm.response.json(); pm.expect(body).to.be.an(\u0027object\u0027); });",
+                                                                   "pm.test(\u0027Response has created id field\u0027, function () { const body = pm.response.json(); pm.expect(Object.keys(body).some((k)=\u003e/^id_/.test(k))).to.eql(true); });"
+                                                               ]
+                                                  }
+                                   }
+                               ]
+                 },
+                 {
+                     "name":  "PUT /citas/:id",
+                     "request":  {
+                                     "method":  "PUT",
+                                     "header":  [
+                                                    {
+                                                        "key":  "Content-Type",
+                                                        "value":  "application/json"
+                                                    }
+                                                ],
+                                     "body":  {
+                                                  "mode":  "raw",
+                                                  "raw":  "{\n  \"fecha\": \"2026-03-22\",\n  \"hora\": \"11:00:00\"\n}"
+                                              },
+                                     "url":  {
+                                                 "raw":  "{{baseUrl}}/citas/1",
+                                                 "host":  [
+                                                              "{{baseUrl}}"
+                                                          ],
+                                                 "path":  [
+                                                              "citas",
+                                                              "1"
+                                                          ]
+                                             }
+                                 },
+                     "event":  [
+                                   {
+                                       "listen":  "test",
+                                       "script":  {
+                                                      "type":  "text/javascript",
+                                                      "exec":  [
+                                                                   "pm.test(\u0027Status code is 200\u0027, function () { pm.response.to.have.status(200); });",
+                                                                   "pm.test(\u0027Response body is object\u0027, function () { const body = pm.response.json(); pm.expect(body).to.be.an(\u0027object\u0027); });",
+                                                                   "pm.test(\u0027Response contains message\u0027, function () { const body = pm.response.json(); pm.expect(body).to.have.property(\u0027message\u0027); });"
+                                                               ]
+                                                  }
+                                   }
+                               ]
+                 },
+                 {
+                     "name":  "DELETE /citas/:id",
+                     "request":  {
+                                     "method":  "DELETE",
+                                     "header":  [
+
+                                                ],
+                                     "url":  {
+                                                 "raw":  "{{baseUrl}}/citas/1",
+                                                 "host":  [
+                                                              "{{baseUrl}}"
+                                                          ],
+                                                 "path":  [
+                                                              "citas",
+                                                              "1"
+                                                          ]
+                                             }
+                                 },
+                     "event":  [
+                                   {
+                                       "listen":  "test",
+                                       "script":  {
+                                                      "type":  "text/javascript",
+                                                      "exec":  [
+                                                                   "pm.test(\u0027Status code is 200\u0027, function () { pm.response.to.have.status(200); });",
+                                                                   "pm.test(\u0027Response body is object\u0027, function () { const body = pm.response.json(); pm.expect(body).to.be.an(\u0027object\u0027); });",
+                                                                   "pm.test(\u0027Response contains message\u0027, function () { const body = pm.response.json(); pm.expect(body).to.have.property(\u0027message\u0027); });"
+                                                               ]
+                                                  }
+                                   }
+                               ]
+                 }
+             ],
+    "variable":  [
+                     {
+                         "key":  "baseUrl",
+                         "value":  "http://127.0.0.1:3000"
+                     }
+                 ]
 }

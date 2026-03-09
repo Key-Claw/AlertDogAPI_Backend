@@ -1,20 +1,30 @@
 // Capa de acceso/negocio para la entidad perro.
 
 const db = require('../configuration/database').db;
-
-// Calcula diferencia de dias tomando medianoche para evitar sesgos por hora.
-const getDaysFromNow = (date) => {
-    const today = new Date();
-    const todayMidnight = new Date(today.getFullYear(), today.getMonth(), today.getDate());
-    const targetMidnight = new Date(date.getFullYear(), date.getMonth(), date.getDate());
-    const diffMs = targetMidnight - todayMidnight;
-    return Math.floor(diffMs / (1000 * 60 * 60 * 24));
-};
+const { getDaysFromNow } = require('../utils/domainRules');
 
 // Obtener todos los perros
-const findAllPerros = async () => {
+const findAllPerros = async (filters = {}) => {
     try {
-        const perros = await db('perro').select('*');
+        let query = db('perro').select('*');
+
+        if (filters.id_usuario !== undefined) {
+            query = query.where('id_usuario', filters.id_usuario);
+        }
+
+        if (filters.raza) {
+            query = query.where('raza', 'like', `%${filters.raza}%`);
+        }
+
+        if (filters.q) {
+            query = query.where((builder) => {
+                builder
+                    .where('nombre', 'like', `%${filters.q}%`)
+                    .orWhere('raza', 'like', `%${filters.q}%`);
+            });
+        }
+
+        const perros = await query;
         return perros;
     } catch (error) {
         console.error('Error al obtener todos los perros:', error);

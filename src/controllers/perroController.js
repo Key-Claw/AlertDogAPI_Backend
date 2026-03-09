@@ -8,11 +8,13 @@ const {
     modifyPerro,
     removePerro
 } = require('../service/perroService');
+const { sanitizePerroFilters } = require('../utils/domainRules');
 
 // Obtener todos los perros
 const getPerros = async (req, res) => {
     try {
-        const perros = await findAllPerros();
+        const filters = sanitizePerroFilters(req.query);
+        const perros = await findAllPerros(filters);
         res.json(perros);
     } catch (error) {
         res.status(500).json({ error: 'Error al obtener perros' });

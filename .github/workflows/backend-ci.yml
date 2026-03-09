@@ -97,6 +97,10 @@ jobs:
       - name: Run API smoke tests
         run: npm run test:api
 
+      # 8.1) Tests unitarios de funciones puras del dominio.
+      - name: Run backend unit tests
+        run: npm run test:unit
+
       # 9) Tests de CRUD de usuarios.
       - name: Run user CRUD tests
         run: npm run test:api:usuarios
