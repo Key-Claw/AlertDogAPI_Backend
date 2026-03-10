@@ -64,6 +64,18 @@ Test-Api -Name 'GET /usuarios/999999 (no existe)' -ExpectedStatusCodes @(404) -A
     Invoke-RestMethod -Uri "$baseUrl/usuarios/999999" -Method Get
 }
 
+Test-Api -Name 'PUT /usuarios/999999 (no existe)' -ExpectedStatusCodes @(404) -Action {
+    Invoke-RestMethod -Uri "$baseUrl/usuarios/999999" -Method Put -ContentType 'application/json' -Body '{"nombre":"Nadie"}'
+}
+
+Test-Api -Name 'DELETE /perros/999999 (no existe)' -ExpectedStatusCodes @(404) -Action {
+    Invoke-RestMethod -Uri "$baseUrl/perros/999999" -Method Delete
+}
+
+Test-Api -Name 'DELETE /citas/999999 (no existe)' -ExpectedStatusCodes @(404) -Action {
+    Invoke-RestMethod -Uri "$baseUrl/citas/999999" -Method Delete
+}
+
 # Pruebas de reglas de negocio para citas
 Test-Api -Name 'POST /citas (duplicada)' -ExpectedStatusCodes @(409) -Action {
     Invoke-RestMethod -Uri "$baseUrl/citas" -Method Post -ContentType 'application/json' -Body '{"fecha":"2026-03-10","hora":"09:00:00","id_perro":1}'

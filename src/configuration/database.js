@@ -1,10 +1,13 @@
-// 1. Importar Knex y configurar la conexión a la base de datos
+// Inicializa Knex para MariaDB/MySQL.
+// Prioridad de configuracion: variables de entorno -> archivo YAML.
 
 const knex = require('knex');
 const { config } = require('./config');
 
-require('dotenv').config(); // Cargar variables del .env
+// Habilita soporte de .env para ejecucion local.
+require('dotenv').config();
 
+// Parametros de conexion usados por mysql2.
 const dbConfig = {
     host: process.env.DB_HOST || config?.db?.host,
     port: Number(process.env.DB_PORT || config?.db?.port || 3306),
@@ -13,10 +16,11 @@ const dbConfig = {
     database: process.env.DB_NAME || config?.db?.database
 };
 
+// Instancia compartida para queries en capa service.
 const db = knex({
     client: 'mysql2',
     connection: dbConfig,
-    useNullAsDefault: true // Para evitar advertencias con SQLite, aunque no es necesario para MySQL
+    useNullAsDefault: true // Se mantiene para compatibilidad y evitar warnings en algunos entornos.
 });
 
 exports.db = db;

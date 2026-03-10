@@ -1,19 +1,30 @@
-// 2.2 Crear el servicio para manejar la lógica de negocio relacionada con los perros
+// Capa de acceso/negocio para la entidad perro.
 
 const db = require('../configuration/database').db;
+const { getDaysFromNow } = require('../utils/domainRules');
 
-const getDaysFromNow = (date) => {
-    const today = new Date();
-    const todayMidnight = new Date(today.getFullYear(), today.getMonth(), today.getDate());
-    const targetMidnight = new Date(date.getFullYear(), date.getMonth(), date.getDate());
-    const diffMs = targetMidnight - todayMidnight;
-    return Math.floor(diffMs / (1000 * 60 * 60 * 24));
-};
-
-// Función para obtener todos los perros (opcional, no implementada en el controlador)
-const findAllPerros = async () => {
+// Obtener todos los perros con filtros opcionales: id_usuario, raza, q (busqueda general en nombre y raza).
+const findAllPerros = async (filters = {}) => {
     try {
-        const perros = await db('perro').select('*');
+        let query = db('perro').select('*');
+
+        if (filters.id_usuario !== undefined) {
+            query = query.where('id_usuario', filters.id_usuario);
+        }
+
+        if (filters.raza) {
+            query = query.where('raza', 'like', `%${filters.raza}%`);
+        }
+
+        if (filters.q) {
+            query = query.where((builder) => {
+                builder
+                    .where('nombre', 'like', `%${filters.q}%`)
+                    .orWhere('raza', 'like', `%${filters.q}%`);
+            });
+        }
+
+        const perros = await query;
         return perros;
     } catch (error) {
         console.error('Error al obtener todos los perros:', error);
@@ -21,7 +32,7 @@ const findAllPerros = async () => {
     }
 };
 
-// Función para buscar un perro por su ID
+// Función para buscar un perro por su ID 
 const findPerro = async (id) => {
     try {
         const perro = await db('perro').where({ id }).first();
@@ -32,7 +43,7 @@ const findPerro = async (id) => {
     }
 };
 
-// Función para agregar un nuevo perro
+// Función para agregar un nuevo perro a un usuario
 const addPerro = async (perro) => {
     try {
         const [id] = await db('perro').insert(perro);
@@ -68,7 +79,8 @@ const getPerroPorRaza = async (raza) => {
 // Función para modificar un perro
 const modifyPerro = async (id, perro) => {
     try {
-        await db('perro').where({ id }).update(perro);
+        const updatedRows = await db('perro').where({ id }).update(perro);
+        return updatedRows;
     } catch (error) {
         console.error('Error al actualizar perro:', error);
         throw error;
@@ -78,14 +90,15 @@ const modifyPerro = async (id, perro) => {
 // Función para eliminar un perro
 const removePerro = async (id) => {
     try {
-        await db('perro').where({ id }).del();
+        const deletedRows = await db('perro').where({ id }).del();
+        return deletedRows;
     } catch (error) {
         console.error('Error al eliminar perro:', error);
         throw error;
     }
 }
 
-// Función para verificar si un perro tiene una cita próxima (opcional, no implementada en el controlador)
+// Regla utilitaria: detecta si existe cita en ventana [hoy, hoy + 7 dias].
 const tieneCitaProxima = async (id_perro) => {
     try {
         const citas = await db('cita').where({ id_perro });

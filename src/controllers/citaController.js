@@ -1,12 +1,13 @@
-// 3.3 Crear el controlador para manejar las solicitudes relacionadas con las citas
+// Controlador para manejar las solicitudes relacionadas con citas
 
 // Importar las funciones del servicio de cita
-const { findAllCitas,
+const {
+    findAllCitas,
     findCita,
     addCita,
-    getCitasPorUsuario,
     modifyCita,
-    removeCita } = require('../service/citaService');
+    removeCita
+} = require('../service/citaService');
 
 // Función auxiliar para mapear errores de negocio de citas a códigos HTTP adecuados
 // CITA_INVALIDA -> 400 (solicitud inválida)
@@ -24,7 +25,7 @@ const mapCitaBusinessError = (error, fallbackMessage) => {
     return { status: 500, body: { error: fallbackMessage } };
 };
 
-// Controlador para obtener todos las citas (opcional, no implementada en el router)
+// Obtener todas las citas
 const getCitas = async (req, res) => {
     try {
         const citas = await findAllCitas();
@@ -34,7 +35,7 @@ const getCitas = async (req, res) => {
     }
 };
 
-// Controlador para obtener una cita por su ID
+// Obtener una cita por su ID
 const getCita = async (req, res) => {
     const { id } = req.params;
     try {
@@ -49,7 +50,7 @@ const getCita = async (req, res) => {
     }
 };
 
-// Controlador para crear un nueva cita
+// Crear una nueva cita
 const postCita = async (req, res) => {
     const citaData = req.body;
     try {
@@ -63,12 +64,16 @@ const postCita = async (req, res) => {
 };
 
 
-// Controlador para modificar una cita
+// Modificar una cita por ID
 const putCita = async (req, res) => {
     const { id } = req.params;
     const citaData = req.body;
     try {
-        await modifyCita(id, citaData);
+        const updatedRows = await modifyCita(id, citaData);
+        if (updatedRows === 0) {
+            res.status(404).json({ error: 'Cita no encontrada' });
+            return;
+        }
         res.status(200).json({ message: 'Cita modificada correctamente' });
     } catch (error) {
         // Convertir errores de negocio a la respuesta HTTP correcta
@@ -77,11 +82,15 @@ const putCita = async (req, res) => {
     }
 };
 
-// Controlador para eliminar una cita
+// Eliminar una cita por ID
 const deleteCita = async (req, res) => {
     const { id } = req.params;
     try {
-        await removeCita(id);
+        const deletedRows = await removeCita(id);
+        if (deletedRows === 0) {
+            res.status(404).json({ error: 'Cita no encontrada' });
+            return;
+        }
         res.status(200).json({ message: 'Cita eliminada correctamente' });
     } catch (error) {
         res.status(500).json({ error: 'Error al eliminar cita' });

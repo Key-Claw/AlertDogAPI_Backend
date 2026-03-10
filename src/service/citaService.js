@@ -1,8 +1,8 @@
-// 2.3 Crear el servicio para manejar la lógica de negocio relacionada con las citas
+// Capa de acceso/negocio para la entidad cita.
 
 const db = require('../configuration/database').db;
 
-// Función para obtener todas las citas (opcional, no implementada en el controlador)
+// Obtener todas las citas
 async function findAllCitas() {
     try {
         const citas = await db('cita').select('*');
@@ -24,7 +24,7 @@ async function findCita(id) {
     }
 }
 
-// Función para agregar una nueva cita
+// Crea una cita aplicando reglas de negocio de obligatoriedad y unicidad.
 const addCita = async (cita) => {
     try {
         const { fecha, hora, id_perro } = cita;
@@ -35,6 +35,7 @@ const addCita = async (cita) => {
             throw businessError;
         }
 
+        // Validacion preventiva para devolver error de negocio claro.
         const citaExistente = await db('cita').where({ fecha, hora, id_perro }).first();
         if (citaExistente) {
             const businessError = new Error('Ese perro ya tiene una cita en esa fecha y hora');
@@ -45,6 +46,7 @@ const addCita = async (cita) => {
         const [id] = await db('cita').insert(cita);
         return id; // Retorna el ID de la nueva cita
     } catch (error) {
+        // Respaldo ante condiciones de carrera: captura duplicado al nivel SQL.
         if (error && error.code === 'ER_DUP_ENTRY') {
             const businessError = new Error('Ese perro ya tiene una cita en esa fecha y hora');
             businessError.code = 'CITA_DUPLICADA';
@@ -69,18 +71,19 @@ const getCitasPorUsuario = async (id_usuario) => {
     }
 }
 
-// Función para modificar una cita
+// Actualiza cita conservando valores actuales cuando llegan updates parciales.
 const modifyCita = async (id, citaData) => {
     try {
         const citaActual = await db('cita').where({ id }).first();
         if (!citaActual) {
-            return;
+            return 0;
         }
 
         const fecha = citaData.fecha || citaActual.fecha;
         const hora = citaData.hora || citaActual.hora;
         const id_perro = citaData.id_perro || citaActual.id_perro;
 
+        // Evita colisionar con otra cita distinta al registro actual.
         const citaExistente = await db('cita')
             .where({ fecha, hora, id_perro })
             .whereNot({ id })
@@ -92,8 +95,10 @@ const modifyCita = async (id, citaData) => {
             throw businessError;
         }
 
-        await db('cita').where({ id }).update(citaData);
+        const updatedRows = await db('cita').where({ id }).update(citaData);
+        return updatedRows;
     } catch (error) {
+        // Respaldo ante condiciones de carrera o constraints de BD.
         if (error && error.code === 'ER_DUP_ENTRY') {
             const businessError = new Error('Ese perro ya tiene una cita en esa fecha y hora');
             businessError.code = 'CITA_DUPLICADA';
@@ -104,10 +109,11 @@ const modifyCita = async (id, citaData) => {
     }
 };
 
-// Función para eliminar una cita (opcional, no implementada en el controlador)
+// Eliminar una cita por ID
 const removeCita = async (id) => {
     try {
-        await db('cita').where({ id }).del();
+        const deletedRows = await db('cita').where({ id }).del();
+        return deletedRows;
     } catch (error) {
         console.error('Error al eliminar cita:', error);
         throw error;
