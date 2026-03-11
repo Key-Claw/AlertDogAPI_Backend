@@ -1,34 +1,9 @@
-// 2.1 Crear el servicio para manejar la lógica de negocio relacionada con los usuarios
+// Capa de acceso/negocio para la entidad usuario.
 
 const db = require('../configuration/database').db;
+const { normalizeRol } = require('../utils/domainRules');
 
-const normalizeRol = (rol) => {
-    if (rol === undefined || rol === null) {
-        return rol;
-    }
-
-    if (typeof rol === 'string') {
-        const rolText = rol.trim().toLowerCase();
-        if (rolText === 'admin') {
-            return 1;
-        }
-        if (rolText === 'usuario' || rolText === 'cliente') {
-            return 0;
-        }
-    }
-
-    if (rol === true || rol === 1 || rol === '1') {
-        return 1;
-    }
-
-    if (rol === false || rol === 0 || rol === '0') {
-        return 0;
-    }
-
-    return rol;
-};
-
-// Función para obtener todos los usuarios (opcional, no implementada en el controlador)
+// Obtener todos los usuarios
 const findAllUsuarios = async () => {
     try {
         const usuarios = await db('usuario').select('*');
@@ -39,14 +14,15 @@ const findAllUsuarios = async () => {
     }
 };
 
-// Función para buscar un usuario por su email y contraseña (para autenticación)
+// Busca un usuario para autenticacion basica.
+// Nota: comparacion de password en texto plano; idealmente migrar a bcrypt.
 const findUsuario = async (email, password) => {
     try {
         const usuario = await getUsuarioPorEmail(email);
         if (!usuario) {
             return null; // Usuario no encontrado
         }
-        // Aquí podríamos agregar lógica para verificar la contraseña, por ejemplo usando bcrypt
+        // Comparacion simple actual, mantenida por compatibilidad.
         if (usuario.password !== password) {
             return null; // Contraseña incorrecta
         }
@@ -62,18 +38,19 @@ const addUsuario = async (usuario) => {
     try {
         const usuarioToSave = {
             ...usuario,
-            rol: normalizeRol(usuario.rol)
+            rol: normalizeRol(usuario.rol),
+            localidad: usuario.localidad ?? null
         };
 
         const [id] = await db('usuario').insert(usuarioToSave);
-        return id; // Retorna el ID del nuevo usuario
+        return id; // Retorna el ID del nuevo usuario 
     } catch (error) {
         console.error('Error al crear usuario:', error);
         throw error;
     }
 };
 
-// Función para obtener un usuario por su email
+// Función para obtener un usuario por su email 
 const getUsuarioPorEmail = async (email) => {
     try {
         const usuario = await db('usuario').where({ email }).first();
@@ -84,7 +61,7 @@ const getUsuarioPorEmail = async (email) => {
     }
 };
 
-// Función para obtener un usuario por su ID
+// Función para obtener un usuario por su ID 
 const getUsuarioPorId = async (id) => {
     try {
         const usuario = await db('usuario').where({ id }).first();
@@ -95,46 +72,50 @@ const getUsuarioPorId = async (id) => {
     }
 };
 
-// Función para modificar un usuario (opcional, no implementada en el controlador)
+// Modificar un usuario por ID  
 const modifyUsuario = async (id, usuario) => {
     try {
         const usuarioToUpdate = {
             ...usuario,
-            rol: normalizeRol(usuario.rol)
+            rol: normalizeRol(usuario.rol),
+            localidad: usuario.localidad ?? null
         };
 
-        await db('usuario').where({ id }).update(usuarioToUpdate);
+        const updatedRows = await db('usuario').where({ id }).update(usuarioToUpdate);
+        return updatedRows;
     } catch (error) {
         console.error('Error al actualizar usuario:', error);
         throw error;
     }
 };
 
-// Función para modificar la contraseña de un usuario (opcional, no implementada en el controlador)
+// Modificar la contraseña de un usuario 
 const modifyPassword = async (id, newPassword) => {
     try {
-        await db('usuario').where({ id }).update({ password: newPassword });
+        const updatedRows = await db('usuario').where({ id }).update({ password: newPassword });
+        return updatedRows;
     } catch (error) {
         console.error('Error al cambiar contraseña:', error);
         throw error;
     }
 }
 
-// Función para eliminar un usuario (opcional, no implementada en el controlador)
+// Eliminar un usuario por ID 
 const removeUsuario = async (id) => {
     try {
-        await db('usuario').where({ id }).del();
+        const deletedRows = await db('usuario').where({ id }).del();
+        return deletedRows;
     } catch (error) {
         console.error('Error al eliminar usuario:', error);
         throw error;
     }
 }
 
-// Función para verificar si un usuario existe por su id
+// Util para validaciones de relaciones y reglas de negocio. 
 const userExisteById = async (id) => {
     try {
         const usuario = await db('usuario').where({ id }).first();
-        return !!usuario; // Retorna true si el usuario existe, false si no
+        return !!usuario; // Retorna true si el usuario existe, false si no 
     } catch (error) {
         console.error('Error al verificar existencia de usuario:', error);
         throw error;

@@ -1,61 +1,76 @@
-// 5.1 Archivo principal de la aplicación
+// Punto de entrada HTTP para la API de AlertDog.
+// Se inicializan middlewares globales, CORS y rutas por recurso.
 
-// Importar Express y Yargs para manejar argumentos de línea de comandos
+// Dependencias base para levantar Express y leer flags CLI.
 const express = require('express');
+const cors = require('cors');
 const yargs = require('yargs/yargs');
 const { hideBin } = require('yargs/helpers');
 
-// Crear la aplicación Express y un router
+// Instancia principal de la app.
 const app = express();
-const router = express.Router();
 
-// Importar la configuración de la base de datos
+// Prioridad de configuracion: argumentos CLI -> variables de entorno -> defaults.
 const argv = yargs(hideBin(process.argv)).argv;
 const host = argv.host || process.env.HOST || '0.0.0.0';
 const port = Number(argv.port || process.env.PORT || 3000);
 
+// Origenes permitidos para peticiones del navegador (frontend local por defecto).
+const allowedOrigins = (
+	process.env.CORS_ORIGINS ||
+	'http://localhost:5173,http://127.0.0.1:5173,http://localhost:4173,http://127.0.0.1:4173,http://localhost:4174,http://127.0.0.1:4174'
+)
+	.split(',')
+	.map((origin) => origin.trim())
+	.filter(Boolean);
+
+const corsOptions = {
+	origin(origin, callback) {
+		// Permite llamadas sin cabecera Origin (Postman, curl, jobs internos).
+		if (!origin) {
+			callback(null, true);
+			return;
+		}
+
+		// Permite navegador solo cuando el origen esta explicitamente en allowlist.
+		if (allowedOrigins.includes(origin)) {
+			callback(null, true);
+			return;
+		}
+
+		// Bloquea origenes no autorizados para evitar consumo web no esperado.
+		callback(new Error(`Origen no permitido por CORS: ${origin}`));
+	}
+};
+
+// Middlewares globales de parseo JSON y CORS.
 app.use(express.json());
+app.use(cors(corsOptions));
 
-// Importar rutas
-const { getUsuarios, getUsuario, postUsuario, putUsuario, deleteUsuario } = require('./controllers/usuarioController');
-const { getPerros, getPerro, postPerro, putPerro, deletePerro } = require('./controllers/perroController');
-const { getCitas, getCita, postCita, putCita, deleteCita } = require('./controllers/citaController');       
+// Routers desacoplados por dominio de negocio. 
+const usuarioRoutes = require('./routes/usuarioRoute');
+const perroRoutes = require('./routes/perroRoute');
+const citaRoutes = require('./routes/citaRoute');
 
-// Rutas para el manejo de usuarios
-router.get('/usuarios', getUsuarios);
-router.get('/usuarios/:id', getUsuario);
-router.post('/usuarios', postUsuario);
-router.put('/usuarios/:id', putUsuario);
-router.delete('/usuarios/:id', deleteUsuario);
-
-// Rutas para el manejo de perros
-router.get('/perros', getPerros);
-router.get('/perros/:id', getPerro);
-router.post('/perros', postPerro);
-router.put('/perros/:id', putPerro);
-router.delete('/perros/:id', deletePerro);
-
-// Rutas para el manejo de citas
-router.get('/citas', getCitas);
-router.get('/citas/:id', getCita);
-router.post('/citas', postCita);
-router.put('/citas/:id', putCita);
-router.delete('/citas/:id', deleteCita);
-
-// Ruta base para verificar rápidamente desde el navegador
-router.get('/', (req, res) => {
+// Endpoint de salud para validacion rapida.
+app.get('/', (req, res) => {
 	res.json({
 		status: 'ok',
 		message: 'AlertDogAPI en ejecución'
 	});
 });
 
-app.use('/', router);
+// Registro de endpoints REST. 
+app.use('/', usuarioRoutes);
+app.use('/', perroRoutes);
+app.use('/', citaRoutes);
 
+// Solo inicia el servidor si el archivo se ejecuta directamente.
 if (require.main === module) {
 	app.listen(port, host, () => {
 		console.log(`Servidor escuchando en http://${host}:${port}`);
 	});
 }
 
+// Se exporta para tests/integraciones.
 module.exports = app;

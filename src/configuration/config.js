@@ -1,19 +1,22 @@
-// 1.1 Configuración de la base de datos
+// Carga de configuracion general desde YAML.
+// Permite usar un archivo alternativo via `--config`.
 
-// Importar Knex y configurar la conexión a la base de datos
+// Dependencias para lectura de archivo y parsing de argumentos.
 const yaml = require('js-yaml');
 const fs = require('fs');
 const yargs = require('yargs/yargs');
 const { hideBin } = require('yargs/helpers');
 
-
-// Leer el archivo de configuración YAML
-let configFile = 'config.local.yaml'; // Valor por defecto
+// Config por defecto pensada para ejecucion local.
+let configFile = 'config.local.yaml';
 const argv = yargs(hideBin(process.argv)).argv;
+
+// Si se envia `--config`, se respeta ese path para entornos alternos.
 if (argv.config) {
     configFile = argv.config;
 }
 
+// Parsea y expone el objeto completo de configuracion.
 const config = yaml.load(fs.readFileSync(configFile, 'utf8'));
 
 module.exports = {

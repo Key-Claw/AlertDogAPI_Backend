@@ -1,48 +1,158 @@
-# AlertDogAPI Backend
+﻿# AlertDogAPI Backend
 
-Backend REST para la gestion de usuarios, perros y citas.
+[![Backend CI](https://github.com/Key-Claw/AlertDogAPI_Backend/actions/workflows/backend-ci.yml/badge.svg)](https://github.com/Key-Claw/AlertDogAPI_Backend/actions/workflows/backend-ci.yml)
 
-## Tecnologias
-- Node.js
-- Express
-- Knex
-- MariaDB / MySQL
-- js-yaml
-- yargs
+API REST para gestionar `usuarios`, `perros` y `citas`.
 
-## Estructura del proyecto
+## Autoria del backend
+Este backend fue disenado, estructurado y evolucionado en capas para ser facil de mantener y defender tecnicamente.
+
+Decisiones de autoria clave:
+- Separacion por capas: `routes` -> `controllers` -> `service`.
+- Reglas de dominio extraidas a `src/utils/domainRules.js` para pruebas unitarias limpias.
+- Diferenciacion explicita entre pruebas unitarias y pruebas de integracion.
+- Pipeline CI para validar automaticamente en cada `push` o `pull_request`.
+
+Documentos relacionados:
+- `DEPLOYMENT_CHECKLIST.md`: checklist de salida a produccion.
+
+## Estado actual (Marzo 2026)
+- Backend operativo en Node + Express con persistencia en MariaDB via Knex.
+- Validacion automatica con pruebas unitarias e integracion.
+- Reglas de negocio implementadas para errores `400`, `404` y conflictos `409`.
+- CORS habilitado para desarrollo local en `5173`, `4173` y `4174`.
+- Eliminacion en cascada activa por esquema SQL (`usuario -> perro -> cita`).
+- Suite de pruebas validada extremo a extremo (unit + API + flujo integrado).
+
+## Novedades recientes
+- Se valido el flujo de eliminacion en cascada usando `DELETE /usuarios/:id`.
+- Se mantuvo consistencia de contratos entre backend y frontend para usuarios, perros y citas.
+- Se genero reporte de pruebas en:
+  - `TEST_REPORT.md` (raiz del workspace)
+  - `AlertDogAPI_Backend/TEST_REPORT.md`
+
+## Tecnologias usadas (que son y para que sirven)
+| Tecnologia | Que es | Para que se usa en este proyecto |
+|---|---|---|
+| Node.js | Motor para ejecutar JavaScript fuera del navegador | Corre el servidor backend |
+| Express | Framework web para Node.js | Define endpoints y maneja requests/responses |
+| Knex | Query builder SQL | Hablar con MariaDB sin repetir SQL en cada archivo |
+| MariaDB | Base de datos relacional | Guardar usuarios, perros y citas |
+| Docker Compose | Orquestador de contenedores | Levantar DB local rapido y consistente |
+| Jest | Framework de testing | Ejecutar pruebas unitarias |
+| PowerShell | Shell de automatizacion en Windows | Ejecutar pruebas de integracion API |
+| GitHub Actions | CI/CD en GitHub | Validar tests en cada push/PR |
+| js-yaml | Parser YAML | Cargar `config.local.yaml` |
+| yargs | Parser de CLI args | Leer parametros de arranque |
+| nodemon | Reinicio automatico | Refrescar servidor al editar codigo |
+
+## Estructura principal
 ```text
 src/
-  app.js
+  app.js                         # entrada del servidor
   configuration/
-    config.js
-    database.js
-  controllers/
-    usuarioController.js
-    perroController.js
-    citaController.js
-  routes/
-    usuarioRoute.js
-    perroRoute.js
-    citaRoute.js
-  service/
-    usuarioService.js
-    perroService.js
-    citaService.js
+    config.js                    # lee YAML y variables de entorno
+    database.js                  # inicializa Knex
+  controllers/                   # capa HTTP
+  routes/                        # define endpoints
+  service/                       # logica de negocio + acceso DB
+  utils/
+    domainRules.js               # reglas puras reutilizables
 db/
-  init.sql
-postman/
-  usuarios.postman_collection.json
-  perros.postman_collection.json
-  citas.postman_collection.json
+  init.sql                       # esquema + seed
 tests/
-  api-smoke-tests.ps1
+  unit/
+    domainRules.test.js          # pruebas unitarias
+  integration/
+    api-smoke-tests.ps1          # smoke test
+    api-usuarios-crud-tests.ps1  # CRUD usuarios
+    api-flujo-perros-citas-tests.ps1 # flujo integrado
+.github/workflows/
+  backend-ci.yml                 # pipeline CI
 ```
 
-## Configuracion
-El backend utiliza `config.local.yaml` para la conexion a base de datos.
+## Tutorial paso a paso (para quien no sabe programar)
+### Paso 1. Instala herramientas
+Necesitas:
+- Node.js LTS
+- Docker Desktop
+- Git
 
-Ejemplo valido:
+Verifica instalacion:
+```bash
+node -v
+npm -v
+docker -v
+git --version
+```
+
+### Paso 2. Clona el repositorio
+```bash
+git clone https://github.com/Key-Claw/AlertDogAPI_Backend.git
+cd AlertDogAPI_Backend
+```
+
+### Paso 3. Instala dependencias
+```bash
+npm install
+```
+
+### Paso 4. Levanta la base de datos
+```bash
+docker compose up -d db
+```
+
+### Paso 5. Crea tablas y datos iniciales
+En Windows PowerShell:
+```powershell
+Get-Content -Raw .\db\init.sql | docker exec -i alertdog_db mariadb -uadmin -p1234 AlertDog
+```
+
+### Paso 6. Arranca la API
+```bash
+npm run dev
+```
+
+Si todo va bien, la API queda disponible en `http://localhost:3000`.
+
+Tip rapido:
+- Si prefieres ejecucion estable sin recarga, usa `npm start`.
+
+### Paso 7. Prueba la API sin programar
+Abre navegador y visita:
+- `http://localhost:3000/usuarios`
+- `http://localhost:3000/perros`
+- `http://localhost:3000/citas`
+
+### Paso 8. Ejecuta pruebas automaticas
+Unitarias:
+```bash
+npm run test:unit
+```
+
+Integracion:
+```bash
+npm run test:integration
+```
+
+Suite completa recomendada antes de push:
+```bash
+npm run test:unit
+npm run test:api:all
+```
+
+### Paso 9. Entiende como se construye esta API
+Orden recomendado de lectura:
+1. `src/app.js` (arranque del servidor).
+2. `src/routes/*.js` (URLs disponibles).
+3. `src/controllers/*.js` (entrada/salida HTTP).
+4. `src/service/*.js` (reglas y consultas DB).
+5. `src/utils/domainRules.js` (reglas reutilizables).
+
+## Configuracion
+Archivo por defecto: `config.local.yaml`.
+
+Ejemplo:
 ```yaml
 db:
   host: localhost
@@ -52,262 +162,83 @@ db:
   database: AlertDog
 
 service:
-  port: 8080
+  port: 3000
 ```
 
-Nota importante: `password` debe ir como string (entre comillas) para evitar errores de autenticacion en `mysql2`.
+Variables de entorno soportadas:
+- `DB_HOST`
+- `DB_PORT`
+- `DB_USER`
+- `DB_PASSWORD`
+- `DB_NAME`
+- `HOST`
+- `PORT`
+- `CORS_ORIGINS`
 
-## Scripts NPM
-- `npm run start`: inicia el backend en `http://0.0.0.0:3000`
-- `npm run dev`: inicia el backend con nodemon
-- `npm run test:api`: ejecuta pruebas rapidas de API en `tests/api-smoke-tests.ps1`
+## Scripts npm
+- `npm run start`: iniciar backend en `0.0.0.0:3000`.
+- `npm run dev`: iniciar backend con recarga automatica.
+- `npm run test:unit`: pruebas unitarias (Jest).
+- `npm run test:api`: smoke test API.
+- `npm run test:api:usuarios`: CRUD de usuarios.
+- `npm run test:api:flujo`: flujo usuario -> perro -> cita.
+- `npm run test:api:all`: todas las integraciones.
+- `npm run test:integration`: alias de `test:api:all`.
 
-## Endpoints implementados
-### Usuarios
+## Endpoints
+Usuarios:
 - `GET /usuarios`
 - `GET /usuarios/:id`
 - `POST /usuarios`
 - `PUT /usuarios/:id`
 - `DELETE /usuarios/:id`
 
-### Perros
+Perros:
 - `GET /perros`
 - `GET /perros/:id`
 - `POST /perros`
 - `PUT /perros/:id`
 - `DELETE /perros/:id`
 
-### Citas
+Citas:
 - `GET /citas`
 - `GET /citas/:id`
 - `POST /citas`
 - `PUT /citas/:id`
 - `DELETE /citas/:id`
 
-## Reglas de negocio implementadas
-- No se permiten citas duplicadas para el mismo perro en la misma fecha y hora.
-- Validacion de campos obligatorios en creacion de citas (`fecha`, `hora`, `id_perro`).
-- Integridad referencial con claves foraneas y `ON DELETE CASCADE`.
+## Cascade Delete (DB)
+La eliminacion en cascada depende del esquema de base de datos:
+- `FOREIGN KEY (id_usuario) REFERENCES usuario(id) ON DELETE CASCADE`
+- `FOREIGN KEY (id_perro) REFERENCES perro(id) ON DELETE CASCADE`
 
-## Codigos HTTP relevantes
-- `200`: consulta o actualizacion correcta
-- `201`: creacion correcta
-- `400`: datos invalidos en citas (`CITA_INVALIDA`)
-- `404`: recurso no encontrado
-- `409`: conflicto por cita duplicada (`CITA_DUPLICADA`)
-- `500`: error interno no controlado
+Efecto:
+- Si se elimina un usuario, se eliminan sus perros.
+- Al eliminar esos perros, se eliminan automaticamente sus citas.
 
-## Base de datos
-El archivo `db/init.sql` contiene:
-- Creacion de tablas `usuario`, `perro`, `cita`
-- Relaciones entre tablas
-- Datos iniciales de prueba
+## CI (GitHub Actions)
+Workflow: `.github/workflows/backend-ci.yml`
 
-## Testing
-Se incluyo una carpeta dedicada para pruebas: `tests/`.
+Valida automaticamente:
+1. Levantar MariaDB de prueba.
+2. Cargar `db/init.sql`.
+3. Iniciar backend.
+4. Ejecutar pruebas de integracion.
+5. Publicar logs cuando algo falla.
 
-Archivo actual:
-- `tests/api-smoke-tests.ps1`
+## Troubleshooting rapido
+- `ECONNREFUSED 127.0.0.1:3306`: DB apagada o credenciales malas.
+- `ENOENT package.json`: estas parado en carpeta incorrecta.
+- Fallo CORS con frontend:
+  - Usa frontend en `http://127.0.0.1:5173`, `http://127.0.0.1:4173` o `http://127.0.0.1:4174`.
+  - Si usas otro puerto, define `CORS_ORIGINS` al arrancar.
 
-Cobertura de estas pruebas:
-- Salud de API (`GET /`)
-- Listados principales (`/usuarios`, `/perros`, `/citas`)
-- Caso `404` de usuario inexistente
-- Caso `409` por cita duplicada
-- Caso `400` por cita invalida
-
-Ejecucion:
-```bash
-npm run test:api
-```
-
-## Postman
-Las colecciones de Postman estan en la carpeta `postman/`:
-- `postman/usuarios.postman_collection.json`
-- `postman/perros.postman_collection.json`
-- `postman/citas.postman_collection.json`
-
-## Arranque rapido
-1. Crear base de datos `AlertDog` en MariaDB/MySQL.
-2. Importar `db/init.sql`.
-3. Revisar `config.local.yaml`.
-4. Instalar dependencias:
-```bash
-npm install
-```
-5. Iniciar backend:
-```bash
-npm run start
-```
-6. Ejecutar pruebas rapidas:
-```bash
-npm run test:api
-```# 🐕 AlertDogAPI
-
-Perfecto 👌 este README explica de forma clara y profesional la configuración del backend de AlertDogAPI, listo para usar y entender fácilmente.
-
----
-
-## 📦 Backend – `package.json` explicado
-
-El archivo `package.json` define la configuración del proyecto backend, incluyendo:
-
-* Nombre del proyecto
-* Scripts de ejecución
-* Dependencias necesarias para el funcionamiento de la API
-
----
-
-### 📌 Información general
-
-```json
-"name": "AlertDogAPI_Backend"
-```
-
-Este es el **nombre del proyecto backend**.
-
----
-
-### ▶ Scripts
-
-```json
-"scripts": {
-  "start": "node src/app.js --config config.loca.yaml"
-}
-```
-
-#### 🔹 `start`
-
-Inicia el servidor backend utilizando Node.js:
-
-* `node src/app.js` → Ejecuta el archivo principal del servidor
-* `--config config.loca.yaml` → Pasa un archivo de configuración externo en formato YAML
-
-Se ejecuta con:
-
-```bash
+Ejemplo (PowerShell):
+```powershell
+$env:CORS_ORIGINS = "http://127.0.0.1:5173,http://127.0.0.1:4173,http://127.0.0.1:4174,http://127.0.0.1:4175"
 npm start
 ```
 
----
 
-## 📚 Dependencias
-
-Las siguientes librerías son necesarias para que la API funcione correctamente:
-
----
-
-### 🚀 express (5.1.0)
-
-Framework para crear el servidor web y construir la API REST.
-
-Permite:
-
-* Definir rutas (`GET`, `POST`, `PUT`, `DELETE`)
-* Manejar peticiones HTTP
-* Conectar el backend con el frontend
-
----
-
-### 🗄 knex (^3.1.0)
-
-Query Builder para bases de datos.
-
-Permite:
-
-* Realizar consultas SQL desde JavaScript
-* Insertar, actualizar y eliminar datos
-* Gestionar la conexión con MariaDB de forma estructurada
-
----
-
-### 🐬 mysql2 (^3.9.0)
-
-Driver que permite conectar Node.js con MariaDB/MySQL.
-
-* Es utilizado por Knex para comunicarse con la base de datos
-
----
-
-### 🌍 cors (^2.8.5)
-
-Middleware que permite la comunicación entre frontend y backend cuando están en diferentes puertos o dominios.
-
-* Evita errores de tipo **CORS policy** en el navegador
-
----
-
-### 🔐 dotenv (^16.4.0)
-
-Permite cargar variables de entorno desde un archivo `.env`.
-
-Se utiliza para almacenar datos sensibles como:
-
-* Usuario de base de datos
-* Contraseña
-* Host
-* Puerto
-* Configuración del servidor
-
----
-
-### 🔑 bcrypt (^5.1.0)
-
-Librería utilizada para **encriptar contraseñas** antes de guardarlas en la base de datos.
-
-* Garantiza que las contraseñas **no se almacenen en texto plano**
-
----
-
-### 📄 js-yaml (4.0.0)
-
-Permite leer archivos de configuración en formato `.yaml`.
-
-* Se utiliza para cargar configuraciones externas del servidor
-
----
-
-### 🧾 yargs (17.0.0)
-
-Permite leer **argumentos enviados por consola**.
-
-* Se usa para pasar el archivo de configuración al iniciar el servidor
-
----
-
-## 🛠 DevDependencies
-
-Dependencias utilizadas únicamente en entorno de desarrollo.
-
----
-
-### 🔄 nodemon (^3.0.0)
-
-Herramienta que reinicia automáticamente el servidor cuando se detectan cambios en el código.
-
-Se recomienda añadir un script adicional para desarrollo:
-
-```json
-"dev": "nodemon src/app.js"
-```
-
-Y ejecutarlo con:
-
-```bash
-npm run dev
-```
-
----
-
-## 🎯 Resumen técnico
-
-El backend de **AlertDogAPI** está construido con:
-
-* **Node.js** como entorno de ejecución
-* **Express** para la creación de la API REST
-* **Knex + MariaDB** para la gestión de base de datos
-* **bcrypt** para seguridad de contraseñas
-* **dotenv y YAML** para gestión de configuración
-* **Docker** para la contenerización del sistema
-
----
+gitbash:
+git checkout main && git pull && git checkout -b feature/local-usuario
